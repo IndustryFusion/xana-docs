@@ -1,30 +1,39 @@
 # The hub
 
 > [Documentation](../README.md) → [Architecture](../ARCHITECTURE.md) → The hub
-> See also: [service details](../../backend/README.md) for a closer look at what it's responsible for.
+> See also: [service details](../../backend/README.md).
 
-This is the central API every other piece of XANA goes through — the interface talks to nothing else, the investigation engine calls back into it for CRM and knowledge lookups rather than reaching connected systems directly, and it's the only piece with durable, lasting state.
+**NestJS**, listening on port 4000, the API hub every other piece of XANA goes through. The interface talks to nothing else; the investigation engine calls back into it for CRM/knowledge data rather than hitting connectors directly; and it's the only service with durable state, persisted in **MongoDB**.
 
-## What it's responsible for
+## Modules
 
-| Area | What it covers |
+| Module | Responsibility |
 |---|---|
-| People and access | Accounts, roles, sessions — who can configure XANA versus who works cases. |
-| Connected systems | Registering CRM and knowledge connectors, and translating each one's own field names into a consistent shape the rest of XANA can rely on. |
-| Case data | Cases, accounts, and how they map to products — the data layer behind Service & Support. |
-| Workbenches | Creating and managing workbenches, and handing them off to the investigation engine when it's time to analyze or continue a case. |
-| Sales | The Sales workspace: appointment data, report building, AI-generated summaries, PDF rendering, and delivery — kept isolated from Service & Support end to end. |
-| Projects | Tying a skill, an AI model, domain knowledge, integrations, and a knowledge scope together into one project a technician can work inside — including keeping that project's knowledge base up to date on request. |
-| Skills, domain knowledge, and integrations | The catalog of available investigation skills, the domain-knowledge graphs a project can select, and registered third-party tool integrations. |
-| AI configuration | Per-project AI model configuration, stored securely. |
-| Setup | One-time initial setup on first startup — seeding the base domain knowledge, an initial AI configuration, and the first admin account (see [2. First login](../guides/02-first-login.md)) — each a no-op once already done. |
+| Auth | Database-backed users with hashed passwords and role-gated CRUD; sessions use a signed session token rather than a third-party identity provider (see [Still on the roadmap](../../README.md#still-on-the-roadmap)). |
+| Users | User CRUD, roles, temporary passwords, last-admin protection. |
+| Connectors | Registers CRM/knowledge connectors via the OpenXANA manifest contract; AI-assisted field mapping. |
+| Proxy | HTTP proxy to connector base URLs, with a TTL-based response cache to avoid re-hitting a connector for the same request. |
+| Knowledge | Browses connector folders, downloads PDF/DOCX content for ingestion. |
+| Support | Cases, accounts, per-case product mappings — the Service & Support vertical's data layer. |
+| Workbenches | Workbench CRUD; bridges to the investigation engine for analyze/continue calls. |
+| Sales | The Sales vertical — appointment reads, report building, AI insights, PDF rendering, email delivery, the weekly schedule. Isolated from Support/Workbenches at the code level. |
+| Projects | Ties a skill, AI provider, ontology, integrations, and a knowledge scope together into one project; owns the per-project knowledge-reindex flow surfaced as the **Reingest** control on each project card. |
+| Skills | Catalog of available investigation skills (the engine's skill registry, mirrored here for the setup UI). |
+| Ontology | Domain-ontology graphs (classes/edges) a project can select — consulted by the investigation graph's context-enrichment step. |
+| AI providers | Pluggable per-project AI model configuration, encrypted API key. Resolved per project and passed through to the engine on every analyze/continue call — but **not** used for connector field mapping or the sales AI summary, which call a separate, simpler global LLM helper that always uses one deployment-wide model configuration. Don't assume "AI provider" always means the per-project store; check which of these two a given feature actually calls. |
+| Integrations (MCP) | Generic OAuth2/PKCE-authenticated MCP server registration. Configuration only today — see the honest note in [ARCHITECTURE.md §2](../ARCHITECTURE.md#_2-connecting-to-your-data-tools-and-connectors) on why an enabled integration isn't yet callable by an investigation. |
+| Migrations | One-time startup seeding, not an ongoing migration tool: the base ontology, an initial AI-provider entry from environment configuration, and the initial admin account — each step is a no-op once its target collection already has data. |
+| Developer | An internal debug-tooling surface backing the interface's developer area. |
+| Database | Mongo connection/schemas, and a one-time legacy-file→Mongo migration path for deployments upgrading from an earlier, file-based version. |
 
-## Why it's the hub, not a thin pass-through
+Durable state spans 11 MongoDB collections as of this writing — workbenches, connectors, connector response cache, case/support state, connector field mappings, users, projects, skills, AI providers, integrations, and domain ontologies.
 
-The hub — not the interface, not the investigation engine — owns figuring out what a field in your connected CRM or knowledge system actually means, and caches responses from those systems sensibly. Both the interface and the investigation engine trust that translation has already happened; neither re-implements it.
+## Why it's the hub, not a thin proxy
+
+The hub — not the interface, not the investigation engine — owns OpenXANA manifest resolution, the connector response cache, and role/session enforcement. Both the interface and the engine trust that it has already resolved "which field on this CRM means what"; neither re-implements that logic.
 
 ## Where to go next
 
 - What calls into it: [The interface](frontend.md)
 - What it calls out to for AI: [The investigation engine](workflow-agent.md)
-- What external systems it connects to: [Connectors](connectors-web.md), [CRM connector](connectors-crm-dynamics-ax.md)
+- What external systems it proxies to: [Connectors](connectors-web.md), [CRM connector](connectors-crm-dynamics-ax.md)

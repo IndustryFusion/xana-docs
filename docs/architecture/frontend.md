@@ -1,24 +1,24 @@
 # The interface
 
 > [Documentation](../README.md) → [Architecture](../ARCHITECTURE.md) → The interface
-> See also: [service details](../../frontend/README.md) for local build/run notes.
+> See also: [service details](../../frontend/README.md).
 
-The web application — the **only** thing anyone using XANA opens, and the only piece that talks to the hub directly. Nothing here ever reaches a connected system, the investigation engine, or any other external service on its own.
+**Next.js (App Router)**, listening on port 3000. It is the **only** UI, and it talks to **only** the hub — never directly to connectors, the investigation engine, or any other external system. Everything the user sees is fetched or posted through one client layer in the interface's codebase.
 
 ## Structure
 
 | Area | What it is |
 |---|---|
-| Login and workspace selector | The landing page after signing in — lists the AI workspaces available to you. |
-| Workspace-scoped areas | Each workspace (Service & Support, Sales, ...) has its own space for the projects and workbenches inside it. Some illustrative surfaces described below live here too. |
-| Service & Support | The project list, project setup, and per-project pages — workbenches, settings, domain knowledge. |
+| Login + workspace selector | The landing page after auth, listing the AI workspaces available to the signed-in user. |
+| Workspace-scoped area | Each workspace (Service & Support, Sales, ...) gets its own scoped area. A couple of illustrative, not-yet-wired surfaces (incident-style lists tied to a future process-monitoring integration) live here too, reachable only by direct URL with no nav entry point — see "What's real vs. illustrative" below. |
+| Service & Support | Project list, project setup wizard, and per-project pages (workbenches, settings, ontology). |
 | Sales | The weekly-report configuration page. |
-| Admin | Global, org-wide configuration: connected systems, AI configuration, integrations, people, domain knowledge, skills. Not scoped to one workspace — one admin area serves all of them. |
-| Developer | Internal tooling, kept separate from the day-to-day product areas. |
+| Admin | Global, org-wide configuration: connections (connectors + AI providers + integrations), users, ontologies, skills. Not workspace-scoped — one admin area serves every workspace. |
+| Developer | Developer-facing tooling, a separate top-level area from the day-to-day product surfaces. |
 
 ## What's real vs. illustrative
 
-Not every screen is wired to a live backend today — a couple of workspace surfaces (incident-style lists tied to future process-monitoring integrations) currently show illustrative data rather than a live feed, ahead of that integration being completed. Everything described in the [Guides](../guides/README.md) — connectors, projects, workbenches, the sales report — is real and backed by the hub.
+Not every page is wired to a live backend call today. A couple of surfaces tied to a planned future process-monitoring integration (see [Still on the roadmap](../../README.md#still-on-the-roadmap)) currently render illustrative data rather than a live feed — they're not reachable from any in-app navigation, only by direct URL, and are called out here rather than left for you to discover. Everything reachable from normal navigation — connectors, projects, workbenches, the sales report — is real and backed by the hub.
 
 ## Where to go next
 
