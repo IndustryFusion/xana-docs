@@ -1,9 +1,9 @@
 # 7. Sales module
 
-> [Documentation](../README.md) → [Guides](README.md) → Sales module
-> Previous: [6. Workbenches](06-workbenches.md)
+> [Documentation](/docs/README.md) → [Guides](/docs/guides/README.md) → Sales module
+> Previous: [6. Workbenches](/docs/guides/06-workbenches.md)
 
-**Sales** is a separate workspace from Service & Support — a different purpose, kept isolated at every level. It reuses the same CRM connector and AI-model infrastructure from [4. Connecting data sources](04-connectors.md), but nothing else from Service & Support or workbenches.
+**Sales** is a separate workspace from Service & Support — a different purpose, kept isolated at every level. It reuses the same CRM connector and AI-model infrastructure from [4. Connecting data sources](/docs/guides/04-connectors.md), but nothing else from Service & Support or workbenches.
 
 ## What it does today: the automated weekly sales report
 
@@ -24,7 +24,7 @@ From the Sales workspace's configuration page, administrators can set:
 - **Managers** — the roster of sales managers to cover.
 - **Test report** — run the pipeline on demand, without waiting for the next scheduled run, useful for checking a configuration change before it goes out for real.
 
-There's no separate "sales" role gating this — see [3. User management](03-user-management.md) — access is through the workspace, the same as Service & Support.
+There's no separate "sales" role gating this — see [3. User management](/docs/guides/03-user-management.md) — access is through the workspace, the same as Service & Support.
 
 ## Email delivery
 
@@ -32,4 +32,4 @@ Sending the report by email is configured separately from the rest of a deployme
 
 ## Why it's isolated
 
-Sales code is kept from ever touching Service & Support's code or data, and vice versa — shared infrastructure (like the underlying connector framework and general account/database plumbing) is reused only in ways that add to it, never in ways that change how Service & Support already depends on it. That isolation goes all the way down to the CRM connector itself: the Sales-specific extension to the CRM connector is intentionally kept separate from the Service & Support–facing one, including its own sign-in handling, so a change to one can never affect the other (see [CRM connector architecture](../architecture/connectors-crm-dynamics-ax.md)).
+Sales code is kept from ever touching Service & Support's code or data, and vice versa — shared infrastructure (like the underlying connector framework and general account/database plumbing) is reused only in ways that add to it, never in ways that change how Service & Support already depends on it. That isolation goes all the way down to the CRM connector itself: the Sales-specific extension to the CRM connector is intentionally kept separate from the Service & Support–facing one, including its own sign-in handling, so a change to one can never affect the other (see [CRM connector architecture](/docs/architecture/connectors-crm-dynamics-ax.md)).

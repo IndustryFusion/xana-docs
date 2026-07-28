@@ -1,6 +1,6 @@
 # CRM connector (Dynamics)
 
-> Part of [the documentation](../../../docs/README.md) → [Architecture: CRM connector](../../../docs/architecture/connectors-crm-dynamics-ax.md).
+> Part of [the documentation](/docs/README.md) → [Architecture: CRM connector](/docs/architecture/connectors-crm-dynamics-ax.md).
 
 A lightweight adapter that exposes an on-premise Microsoft Dynamics CRM installation — secured with ADFS — to the rest of XANA, through the same connector contract every data source uses.
 
@@ -13,9 +13,9 @@ A lightweight adapter that exposes an on-premise Microsoft Dynamics CRM installa
 
 ## Two isolated capabilities in one connector
 
-This connector serves both Service & Support and Sales, and keeps that separation down to its own internals: Service & Support–facing entities and Sales' appointment-data entities are two distinct, additive extensions, with their own sign-in and session handling kept intentionally separate — so a change made for one workspace can never affect the other. See [Sales module](../../../docs/guides/07-sales-module.md) and [CRM connector architecture](../../../docs/architecture/connectors-crm-dynamics-ax.md) for more.
+This connector serves both Service & Support and Sales, and keeps that separation down to its own internals: Service & Support–facing entities and Sales' appointment-data entities are two distinct, additive extensions, with their own sign-in and session handling kept intentionally separate — so a change made for one workspace can never affect the other. See [Sales module](/docs/guides/07-sales-module.md) and [CRM connector architecture](/docs/architecture/connectors-crm-dynamics-ax.md) for more.
 
 ## Where to go next
 
-- How it fits with the rest of XANA: [Architecture: CRM connector](../../../docs/architecture/connectors-crm-dynamics-ax.md)
-- How an admin registers one: [4. Connecting data sources](../../../docs/guides/04-connectors.md)
+- How it fits with the rest of XANA: [Architecture: CRM connector](/docs/architecture/connectors-crm-dynamics-ax.md)
+- How an admin registers one: [4. Connecting data sources](/docs/guides/04-connectors.md)

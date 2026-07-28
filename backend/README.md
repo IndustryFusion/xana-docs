@@ -1,6 +1,6 @@
 # The hub
 
-> Part of [the documentation](../docs/README.md) → [Architecture: the hub](../docs/architecture/backend.md).
+> Part of [the documentation](/docs/README.md) → [Architecture: the hub](/docs/architecture/backend.md).
 
 The hub is XANA's central API and system of record — the piece every other service goes through, and the only one with durable, lasting state.
 
@@ -16,6 +16,6 @@ If a deployment is moving from an earlier, file-based way of storing this data i
 
 ## Where to go next
 
-- How it fits with the rest of XANA: [Architecture: the hub](../docs/architecture/backend.md)
-- What calls into it: [The interface](../docs/architecture/frontend.md)
-- What it calls out to for AI: [The investigation engine](../docs/architecture/workflow-agent.md)
+- How it fits with the rest of XANA: [Architecture: the hub](/docs/architecture/backend.md)
+- What calls into it: [The interface](/docs/architecture/frontend.md)
+- What it calls out to for AI: [The investigation engine](/docs/architecture/workflow-agent.md)

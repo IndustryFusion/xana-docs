@@ -1,7 +1,7 @@
 # Connector: CRM (Dynamics)
 
-> [Documentation](../README.md) → [Architecture](../ARCHITECTURE.md) → [Connectors](connectors-web.md) → CRM / Dynamics
-> See also: [service details](../../connectors/CRM/dynamics-ax/README.md).
+> [Documentation](/docs/README.md) → [Architecture](/docs/ARCHITECTURE.md) → [Connectors](/docs/architecture/connectors-web.md) → CRM / Dynamics
+> See also: [service details](/connectors/CRM/dynamics-ax/README.md).
 
 **.NET 8 / ASP.NET Core**, its own deployable, listening on port 8080 by default (the root Docker Compose setup maps it to host port 8081 to avoid colliding with the web connector, which also defaults to 8080). Built with ASP.NET Core's minimal-API style rather than MVC controllers. A lightweight adapter that exposes an on-premise Microsoft Dynamics CRM installation — secured with **ADFS** — through a REST API implementing the OpenXANA connector contract (`contractVersion: "1.3.0"`).
 
@@ -30,10 +30,10 @@ For this adapter specifically, the exposed resources are accounts (with asset, p
 This connector serves two workspaces that are deliberately kept separate everywhere else in XANA — Service & Support and Sales — and it carries that separation down to its own internals:
 
 - The original Service & Support–facing entities (accounts, cases, activity history) that a workbench investigation reads.
-- A **separate, additive** set of routes for the Sales workspace's appointment data, covering a different part of Dynamics entirely (its Sales/Activities module rather than Service's case module). Its own ADFS sign-in and session-caching logic is **intentionally duplicated** rather than shared, specifically so a change made for one workspace can never affect the other. This mirrors the sales/support isolation described in [7. Sales module](../guides/07-sales-module.md).
+- A **separate, additive** set of routes for the Sales workspace's appointment data, covering a different part of Dynamics entirely (its Sales/Activities module rather than Service's case module). Its own ADFS sign-in and session-caching logic is **intentionally duplicated** rather than shared, specifically so a change made for one workspace can never affect the other. This mirrors the sales/support isolation described in [7. Sales module](/docs/guides/07-sales-module.md).
 
 ## Where to go next
 
-- The other connector: [Web / storage](connectors-web.md)
-- How an admin registers one: [4. Connecting data sources](../guides/04-connectors.md)
-- What consumes CRM case data day to day: [Workbenches guide](../guides/06-workbenches.md); what consumes appointment data: [Sales module guide](../guides/07-sales-module.md)
+- The other connector: [Web / storage](/docs/architecture/connectors-web.md)
+- How an admin registers one: [4. Connecting data sources](/docs/guides/04-connectors.md)
+- What consumes CRM case data day to day: [Workbenches guide](/docs/guides/06-workbenches.md); what consumes appointment data: [Sales module guide](/docs/guides/07-sales-module.md)

@@ -1,6 +1,6 @@
 # Running it locally
 
-> Part of [the documentation](../README.md) → [Architecture](../ARCHITECTURE.md). See also the [root README](../../README.md).
+> Part of [the documentation](/docs/README.md) → [Architecture](/docs/ARCHITECTURE.md). See also the [root README](/README.md).
 
 Run the entire product from the repository root via Docker Compose — closer to a production topology than the hot-reload native dev flow, and the fastest way to see XANA end to end without provisioning a cluster.
 
@@ -17,7 +17,7 @@ The default Compose profile brings up the interface, the hub, MongoDB, the inves
 | MongoDB | `localhost:27017` |
 | Qdrant | `http://localhost:6333` |
 
-The initial administrator account is seeded from configuration on first startup (see [2. First login](../guides/02-first-login.md)) — always set a real password for it before anything beyond a throwaway local instance.
+The initial administrator account is seeded from configuration on first startup (see [2. First login](/docs/guides/02-first-login.md)) — always set a real password for it before anything beyond a throwaway local instance.
 
 ### Full stack with connectors
 
@@ -73,5 +73,5 @@ To iterate on the investigation engine plus Qdrant without the rest of the stack
 
 ## Where to go next
 
-- What each of these services actually does: [The interface](../architecture/frontend.md) · [The hub](../architecture/backend.md) · [The investigation engine](../architecture/workflow-agent.md) · [Connectors](../architecture/connectors-web.md)
-- Production deployment: [Running it in production](kubernetes-deployment.md)
+- What each of these services actually does: [The interface](/docs/architecture/frontend.md) · [The hub](/docs/architecture/backend.md) · [The investigation engine](/docs/architecture/workflow-agent.md) · [Connectors](/docs/architecture/connectors-web.md)
+- Production deployment: [Running it in production](/docs/setup/kubernetes-deployment.md)

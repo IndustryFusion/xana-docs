@@ -1,9 +1,9 @@
 # 6. Workbenches
 
-> [Documentation](../README.md) → [Guides](README.md) → Workbenches
-> Previous: [5. Projects](05-projects.md) · Next: [7. Sales module](07-sales-module.md)
+> [Documentation](/docs/README.md) → [Guides](/docs/guides/README.md) → Workbenches
+> Previous: [5. Projects](/docs/guides/05-projects.md) · Next: [7. Sales module](/docs/guides/07-sales-module.md)
 
-A **workbench** is one case a technician is working: it links a CRM account, case, and optionally a product to a scoped set of knowledge documents, and drives an AI investigation over that evidence. Everything else in Service & Support — connected data sources, AI model, domain knowledge, knowledge scope ([4](04-connectors.md), [5](05-projects.md)) — exists to make a workbench possible.
+A **workbench** is one case a technician is working: it links a CRM account, case, and optionally a product to a scoped set of knowledge documents, and drives an AI investigation over that evidence. Everything else in Service & Support — connected data sources, AI model, domain knowledge, knowledge scope ([4](/docs/guides/04-connectors.md), [5](/docs/guides/05-projects.md)) — exists to make a workbench possible.
 
 ## Creating one
 
@@ -11,7 +11,7 @@ Open a project and you land on its dashboard, which is also the workbench list. 
 
 ## Running an investigation
 
-From a workbench, asking for repair steps sends it to the investigation engine, which runs the project's selected skill: it pulls in context from the linked CRM case, retrieves relevant passages from whatever manuals are **already indexed** for the project, and generates observations, hypotheses, and troubleshooting steps with citations back to the source manuals and notes. Analyzing a case never re-reads the knowledge scope itself — that's a separate, explicit step (the project's re-index control, see [5. Projects](05-projects.md#keeping-the-knowledge-index-current)), kept out of the everyday investigation path so a case doesn't wait on a live re-read of your documents. If a workbench isn't citing a manual you just added, re-index the project first. If the investigation engine is temporarily unavailable, the workbench still gets a result — a placeholder one, clearly flagged, with no AI steps or citations — so you know to re-analyze once it's back.
+From a workbench, asking for repair steps sends it to the investigation engine, which runs the project's selected skill: it pulls in context from the linked CRM case, retrieves relevant passages from whatever manuals are **already indexed** for the project, and generates observations, hypotheses, and troubleshooting steps with citations back to the source manuals and notes. Analyzing a case never re-reads the knowledge scope itself — that's a separate, explicit step (the project's re-index control, see [5. Projects](/docs/guides/05-projects.md#keeping-the-knowledge-index-current)), kept out of the everyday investigation path so a case doesn't wait on a live re-read of your documents. If a workbench isn't citing a manual you just added, re-index the project first. If the investigation engine is temporarily unavailable, the workbench still gets a result — a placeholder one, clearly flagged, with no AI steps or citations — so you know to re-analyze once it's back.
 
 What a technician does from there, all from the same workbench page:
 
@@ -28,4 +28,4 @@ The interface's language setting is passed through on every investigation and fo
 
 ## Isolation from Sales
 
-Workbenches, the Service & Support area, and its investigation skill are a separate vertical from Sales ([7](07-sales-module.md)) — they don't share code or data, only the same connector and AI-model infrastructure described in [4. Connecting data sources](04-connectors.md).
+Workbenches, the Service & Support area, and its investigation skill are a separate vertical from Sales ([7](/docs/guides/07-sales-module.md)) — they don't share code or data, only the same connector and AI-model infrastructure described in [4. Connecting data sources](/docs/guides/04-connectors.md).

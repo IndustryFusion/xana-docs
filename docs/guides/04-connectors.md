@@ -1,9 +1,9 @@
 # 4. Connecting data sources
 
-> [Documentation](../README.md) → [Guides](README.md) → Connecting data sources
-> Previous: [3. User management](03-user-management.md) · Next: [5. Projects](05-projects.md)
+> [Documentation](/docs/README.md) → [Guides](/docs/guides/README.md) → Connecting data sources
+> Previous: [3. User management](/docs/guides/03-user-management.md) · Next: [5. Projects](/docs/guides/05-projects.md)
 
-Everything under the admin area's **Connections** section is global, org-wide configuration — set up once by an administrator, then reused by every project. This is where you plug in *where your data and your AI come from*; a project ([5. Projects](05-projects.md)) later picks which of these it actually uses.
+Everything under the admin area's **Connections** section is global, org-wide configuration — set up once by an administrator, then reused by every project. This is where you plug in *where your data and your AI come from*; a project ([5. Projects](/docs/guides/05-projects.md)) later picks which of these it actually uses.
 
 ## Connectors (CRM / knowledge)
 
@@ -20,11 +20,11 @@ Either one — or a connector you build yourself against the same contract — c
 
 An AI model configuration is a pluggable setup: which provider, which model, and its access credentials (stored securely). If one wasn't already set up during initial setup, add one here.
 
-This per-project configuration powers **workbench investigations** ([6. Workbenches](06-workbenches.md)) — a project picks which one it uses, see [5. Projects](05-projects.md). Some other AI-assisted features elsewhere in XANA (like connector setup and the sales report's executive summary) use a shared, deployment-wide default instead of a per-project choice, since they aren't tied to one specific project.
+This per-project configuration powers **workbench investigations** ([6. Workbenches](/docs/guides/06-workbenches.md)) — a project picks which one it uses, see [5. Projects](/docs/guides/05-projects.md). Some other AI-assisted features elsewhere in XANA (like connector setup and the sales report's executive summary) use a shared, deployment-wide default instead of a per-project choice, since they aren't tied to one specific project.
 
 ## Integrations (optional)
 
-The admin area's Connections section also manages optional **tool integrations** — external tools and data sources a project can enable alongside its knowledge base, registered through emerging open standards for connecting AI systems to external services. Today this covers registration and configuration; making an enabled integration's tools available to an investigation's reasoning step directly is on the roadmap. See [Architecture §2](../ARCHITECTURE.md#_2-connecting-to-your-data-tools-and-connectors) for more.
+The admin area's Connections section also manages optional **tool integrations** — external tools and data sources a project can enable alongside its knowledge base, registered through emerging open standards for connecting AI systems to external services. Today this covers registration and configuration; making an enabled integration's tools available to an investigation's reasoning step directly is on the roadmap. See [Architecture §2](/docs/ARCHITECTURE.md#_2-connecting-to-your-data-tools-and-connectors) for more.
 
 ## Domain knowledge
 

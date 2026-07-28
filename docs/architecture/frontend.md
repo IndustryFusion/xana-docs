@@ -1,7 +1,7 @@
 # The interface
 
-> [Documentation](../README.md) → [Architecture](../ARCHITECTURE.md) → The interface
-> See also: [service details](../../frontend/README.md).
+> [Documentation](/docs/README.md) → [Architecture](/docs/ARCHITECTURE.md) → The interface
+> See also: [service details](/frontend/README.md).
 
 **Next.js (App Router)**, listening on port 3000. It is the **only** UI, and it talks to **only** the hub — never directly to connectors, the investigation engine, or any other external system. Everything the user sees is fetched or posted through one client layer in the interface's codebase.
 
@@ -18,9 +18,9 @@
 
 ## What's real vs. illustrative
 
-Not every page is wired to a live backend call today. A couple of surfaces tied to a planned future process-monitoring integration (see [Still on the roadmap](../../README.md#still-on-the-roadmap)) currently render illustrative data rather than a live feed — they're not reachable from any in-app navigation, only by direct URL, and are called out here rather than left for you to discover. Everything reachable from normal navigation — connectors, projects, workbenches, the sales report — is real and backed by the hub.
+Not every page is wired to a live backend call today. A couple of surfaces tied to a planned future process-monitoring integration (see [Still on the roadmap](/README.md#still-on-the-roadmap)) currently render illustrative data rather than a live feed — they're not reachable from any in-app navigation, only by direct URL, and are called out here rather than left for you to discover. Everything reachable from normal navigation — connectors, projects, workbenches, the sales report — is real and backed by the hub.
 
 ## Where to go next
 
-- Using the app as a technician or admin: [the guides](../guides/README.md).
-- What the hub it talks to actually does: [The hub](backend.md).
+- Using the app as a technician or admin: [the guides](/docs/guides/README.md).
+- What the hub it talks to actually does: [The hub](/docs/architecture/backend.md).

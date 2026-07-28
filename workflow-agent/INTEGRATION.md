@@ -1,6 +1,6 @@
 # How the engine and the hub work together
 
-> Part of [the documentation](../docs/README.md) → [Architecture: the investigation engine](../docs/architecture/workflow-agent.md).
+> Part of [the documentation](/docs/README.md) → [Architecture: the investigation engine](/docs/architecture/workflow-agent.md).
 
 The investigation engine and the hub are two separate services with a simple relationship: the hub calls the engine to start or continue an investigation, the engine calls back into the hub for whatever CRM or knowledge data it needs, and the result is handed back to the interface as part of the same workbench a technician is already looking at — nothing changes from the technician's point of view.
 
@@ -15,5 +15,5 @@ If the investigation engine is disabled or temporarily unreachable, the hub does
 
 ## Where to go next
 
-- The reasoning loop itself: [Architecture overview](../docs/ARCHITECTURE.md)
-- The day-to-day flow this powers: [Workbenches guide](../docs/guides/06-workbenches.md)
+- The reasoning loop itself: [Architecture overview](/docs/ARCHITECTURE.md)
+- The day-to-day flow this powers: [Workbenches guide](/docs/guides/06-workbenches.md)

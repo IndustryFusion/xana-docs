@@ -1,7 +1,7 @@
 # Connector: web / storage
 
-> [Documentation](../README.md) → [Architecture](../ARCHITECTURE.md) → [Connectors](connectors-crm-dynamics-ax.md) → Web / storage
-> See also: [service details](../../connectors/storages/web/README.md).
+> [Documentation](/docs/README.md) → [Architecture](/docs/ARCHITECTURE.md) → [Connectors](/docs/architecture/connectors-crm-dynamics-ax.md) → Web / storage
+> See also: [service details](/connectors/storages/web/README.md).
 
 **NestJS**, its own deployable, listening on port 8080 by default. A configurable REST connector for authorized websites, wikis, and document portals — **not** a general internet crawler. Every remote request is constrained by connector configuration: allowed hosts, URL validation, SSRF checks, timeouts, crawl limits, and file-size limits.
 
@@ -13,7 +13,7 @@
 
 ## OpenXANA contract
 
-Like every connector, it exposes `GET /openxana/manifest` as its entry point — the self-describing manifest the hub fetches once at registration time (see [4. Connecting data sources](../guides/04-connectors.md)). Beyond the manifest, its own browsing endpoints are what the hub's knowledge module calls to let a technician browse and pull manuals into a project's knowledge scope:
+Like every connector, it exposes `GET /openxana/manifest` as its entry point — the self-describing manifest the hub fetches once at registration time (see [4. Connecting data sources](/docs/guides/04-connectors.md)). Beyond the manifest, its own browsing endpoints are what the hub's knowledge module calls to let a technician browse and pull manuals into a project's knowledge scope:
 
 | Endpoint | Purpose |
 |---|---|
@@ -38,5 +38,5 @@ Connector configuration (which sites, which credentials) is a deployment input �
 
 ## Where to go next
 
-- The other connector: [CRM (Dynamics)](connectors-crm-dynamics-ax.md)
-- How an admin registers one: [4. Connecting data sources](../guides/04-connectors.md)
+- The other connector: [CRM (Dynamics)](/docs/architecture/connectors-crm-dynamics-ax.md)
+- How an admin registers one: [4. Connecting data sources](/docs/guides/04-connectors.md)

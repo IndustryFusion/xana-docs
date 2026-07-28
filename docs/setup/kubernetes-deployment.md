@@ -1,9 +1,9 @@
 # Running it in production
 
-> [Documentation](../README.md) → Running it in production
-> See also: [Running it locally](docker-deployment.md) (local/single-host) · [root README](../../README.md)
+> [Documentation](/docs/README.md) → Running it in production
+> See also: [Running it locally](/docs/setup/docker-deployment.md) (local/single-host) · [root README](/README.md)
 
-**The Kubernetes manifests are not in this repository.** `xana-business` is the application monorepo (the services described in the [root README](../../README.md)); how those services get deployed to a cluster is a separate concern, owned by a dedicated deployment repository: **[GitOpsRepo](https://github.com/IndustryFusion/GitOpsRepo)**. Conventionally checked out as a sibling of this repo — that's also the fixed relative path XANA's own build/deploy tooling assumes. Application code changes (this repo) and the deployed state of the cluster (GitOpsRepo) are versioned, reviewed, and rolled back independently — deliberate GitOps practice, not an oversight.
+**The Kubernetes manifests are not in this repository.** `xana-business` is the application monorepo (the services described in the [root README](/README.md)); how those services get deployed to a cluster is a separate concern, owned by a dedicated deployment repository: **[GitOpsRepo](https://github.com/IndustryFusion/GitOpsRepo)**. Conventionally checked out as a sibling of this repo — that's also the fixed relative path XANA's own build/deploy tooling assumes. Application code changes (this repo) and the deployed state of the cluster (GitOpsRepo) are versioned, reviewed, and rolled back independently — deliberate GitOps practice, not an oversight.
 
 ## Concepts, briefly
 
@@ -27,7 +27,7 @@ ollama                  in-cluster Ollama — vision captioning, option A
 ovms                    in-cluster OpenVINO Model Server — vision captioning, option B
 ```
 
-Every chart shares the `xana` namespace and gives its Service a **fixed, non-release-prefixed name** (`mongo`, `qdrant`, `backend`, ...), so charts reach each other over stable in-cluster DNS regardless of what Helm release name Fleet assigns — e.g. the hub's default MongoDB connection string is `mongodb://mongo:27017/xana-business`, matching the same connection-string shape used in [local development](docker-deployment.md).
+Every chart shares the `xana` namespace and gives its Service a **fixed, non-release-prefixed name** (`mongo`, `qdrant`, `backend`, ...), so charts reach each other over stable in-cluster DNS regardless of what Helm release name Fleet assigns — e.g. the hub's default MongoDB connection string is `mongodb://mongo:27017/xana-business`, matching the same connection-string shape used in [local development](/docs/setup/docker-deployment.md).
 
 In Rancher's Continuous Delivery UI, the GitRepo's **Paths** field must list every chart folder explicitly — Fleet doesn't glob-expand a parent directory into multiple bundles. Each path becomes its own bundle (named `<gitrepo-name>-<last-path-segment>`, e.g. `xana-business-backend`), so adding a new chart means registering its path too, not just adding the folder.
 
@@ -79,5 +79,5 @@ Run from inside a GitOpsRepo checkout — this is the same chart set Fleet insta
 
 ## Where to go next
 
-- What each of these charts actually runs: [The interface](../architecture/frontend.md) · [The hub](../architecture/backend.md) · [The investigation engine](../architecture/workflow-agent.md) · [Connectors](../architecture/connectors-web.md)
-- Local, single-host deployment: [Running it locally](docker-deployment.md)
+- What each of these charts actually runs: [The interface](/docs/architecture/frontend.md) · [The hub](/docs/architecture/backend.md) · [The investigation engine](/docs/architecture/workflow-agent.md) · [Connectors](/docs/architecture/connectors-web.md)
+- Local, single-host deployment: [Running it locally](/docs/setup/docker-deployment.md)

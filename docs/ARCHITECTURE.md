@@ -1,6 +1,6 @@
 # How XANA is built
 
-> Part of [the documentation](README.md). See also: [root README](../README.md) · [step-by-step guides](guides/) · [running it locally](setup/docker-deployment.md) · [running it in production](setup/kubernetes-deployment.md)
+> Part of [the documentation](/docs/README.md). See also: [root README](/README.md) · [step-by-step guides](/docs/guides/) · [running it locally](/docs/setup/docker-deployment.md) · [running it in production](/docs/setup/kubernetes-deployment.md)
 
 This page is the technical deep-dive: how the investigation engine actually reasons about a case, the protocols and algorithms behind retrieval, how the AI model layer is configured, and how the interface and hub fit around it. It's written for someone integrating with XANA or evaluating it technically — real technology choices and data flow, not a source walkthrough.
 
@@ -94,10 +94,10 @@ Neither `search_knowledge` nor `search_crm_history` talks to a connector directl
 
 The two connectors that ship today, each its own architecture page:
 
-- [CRM (Dynamics)](architecture/connectors-crm-dynamics-ax.md) — what `search_crm_history` is grounded in
-- [Web / storage](architecture/connectors-web.md) — one source of what gets ingested into `search_knowledge`'s index
+- [CRM (Dynamics)](/docs/architecture/connectors-crm-dynamics-ax.md) — what `search_crm_history` is grounded in
+- [Web / storage](/docs/architecture/connectors-web.md) — one source of what gets ingested into `search_knowledge`'s index
 
-See [4. Connecting data sources](guides/04-connectors.md) for how an admin registers either one.
+See [4. Connecting data sources](/docs/guides/04-connectors.md) for how an admin registers either one.
 
 ### Tool integrations via MCP — provisioned, not yet wired into reasoning
 
@@ -198,7 +198,7 @@ Everything above happens because a technician clicked something in the interface
 
 The shape a technician navigates: a **workspace** (Service & Support, Sales, ...) contains **projects** (each one scoping which skill, AI model, ontology, and knowledge base apply — see [§3](#_3-bringing-your-own-ai-model) and [§4](#_4-how-your-knowledge-base-becomes-searchable)), and inside a project, **workbenches** — one per case. Opening a workbench and asking for repair steps is what triggers the analysis graph in [§1](#_1-the-core-the-investigation-engine); every subsequent chat message or step-status change triggers the continue graph.
 
-Full detail: [Interface architecture](architecture/frontend.md) · [5. Projects](guides/05-projects.md) · [6. Workbenches](guides/06-workbenches.md).
+Full detail: [Interface architecture](/docs/architecture/frontend.md) · [5. Projects](/docs/guides/05-projects.md) · [6. Workbenches](/docs/guides/06-workbenches.md).
 
 ## 8. The hub — the system of record
 
@@ -209,6 +209,6 @@ The NestJS hub, listening on port 4000, is what every other piece goes through �
 - Project, ontology, and integration configuration referenced throughout.
 - All durable state, in **MongoDB** — people, projects, connectors, workbenches (including the investigation state described in §1–2), and the sales module.
 
-Full detail: [Hub architecture](architecture/backend.md).
+Full detail: [Hub architecture](/docs/architecture/backend.md).
 
 ---

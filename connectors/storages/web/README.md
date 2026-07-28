@@ -1,6 +1,6 @@
 # Web / storage connector
 
-> Part of [the documentation](../../../docs/README.md) → [Architecture: web / storage connector](../../../docs/architecture/connectors-web.md).
+> Part of [the documentation](/docs/README.md) → [Architecture: web / storage connector](/docs/architecture/connectors-web.md).
 
 A configurable connector for authorized websites, wikis, and document portals — not a general internet crawler. It signs in to a configured site, reads its folder and document structure into a consistent shape, and streams document downloads through the hub rather than exposing the source system directly.
 
@@ -18,5 +18,5 @@ Which sites this connector can reach, and its credentials, are set at deployment
 
 ## Where to go next
 
-- How it fits with the rest of XANA: [Architecture: web / storage connector](../../../docs/architecture/connectors-web.md)
-- How an admin registers one: [4. Connecting data sources](../../../docs/guides/04-connectors.md)
+- How it fits with the rest of XANA: [Architecture: web / storage connector](/docs/architecture/connectors-web.md)
+- How an admin registers one: [4. Connecting data sources](/docs/guides/04-connectors.md)
