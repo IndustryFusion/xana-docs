@@ -13,7 +13,7 @@ Projects live under the Support AI workspace: **Support → New project** (`/sup
 |---|---|---|
 | 1. Name | `name`, `description` | Just identification. |
 | 2. Skill | `selectedSkillId` | Which LangGraph skill graph a workbench in this project runs (`workflow-agent/src/graphs/registry.py` maps a skill id to an analysis/continue/synthesis graph triple). Today's shipped skill is metal-processing support; new skills register into the same registry and become selectable here. |
-| 3. MCP servers | `enabledMcpServerIds` | Which of the org's registered MCP servers ([4](04-connectors.md)) this project enables. **Not yet actually reachable by an investigation** — see the MCP note in [4](04-connectors.md) and [ARCHITECTURE.md §2](../ARCHITECTURE.md#2-connecting-to-data-sources-tool-calling-connectors-and-mcp). |
+| 3. MCP servers | `enabledMcpServerIds` | Which of the org's registered MCP servers ([4](04-connectors.md)) this project enables. **Not yet actually reachable by an investigation** — see the MCP note in [4](04-connectors.md) and [ARCHITECTURE.md §2](../ARCHITECTURE.md#_2-connecting-to-data-sources-tool-calling-connectors-and-mcp). |
 | 4. AI & Ontology | `defaultAiProviderId`, `selectedOntologyId` | Which AI provider answers for this project, and which domain-ontology graph (classes/edges the investigation consults) applies. |
 | 5. Knowledge scope | `knowledgeScope` | Which folders/documents from a registered knowledge connector are in-bounds for this project's RAG retrieval — this is what keeps one project's manuals from leaking into another's answers. |
 
@@ -25,7 +25,7 @@ A connector itself (the CRM or knowledge source) isn't picked per-project the sa
 
 ## Keeping the knowledge index current
 
-Setting a knowledge scope doesn't mean every workbench query re-reads it live — manuals are ingested and indexed (Qdrant + BM25) once, ahead of time, and a workbench's retrieval only ever searches what's already indexed (see [ARCHITECTURE.md §6](../ARCHITECTURE.md#6-the-rag-pipeline--tying-it-together)). Each project card on the **Support** project list shows its ingestion status and a **Reingest** control (`POST /projects/:id/reingest`) — use it after changing a project's knowledge scope, or with the "restart from scratch" option after a chunking/embedding-model change, so newly added or changed manuals actually become citable. If a workbench isn't finding something you just added to the knowledge scope, reindexing — not re-analyzing — is usually the fix.
+Setting a knowledge scope doesn't mean every workbench query re-reads it live — manuals are ingested and indexed (Qdrant + BM25) once, ahead of time, and a workbench's retrieval only ever searches what's already indexed (see [ARCHITECTURE.md §6](../ARCHITECTURE.md#_6-the-rag-pipeline-tying-it-together)). Each project card on the **Support** project list shows its ingestion status and a **Reingest** control (`POST /projects/:id/reingest`) — use it after changing a project's knowledge scope, or with the "restart from scratch" option after a chunking/embedding-model change, so newly added or changed manuals actually become citable. If a workbench isn't finding something you just added to the knowledge scope, reindexing — not re-analyzing — is usually the fix.
 
 ## Who can do what
 

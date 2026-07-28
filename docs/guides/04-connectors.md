@@ -31,7 +31,7 @@ This per-project `ai-providers` store is used for **workbench AI investigation**
 
 ## MCP servers (optional)
 
-Admin → Connections also manages **MCP servers** — external tool/data sources reachable over MCP (OAuth2/PKCE-authenticated), beyond the CRM/knowledge connector contract. A project can enable one or more MCP servers alongside its knowledge scope, **but as of this writing an enabled MCP server's tools are not actually offered to the investigation's reasoning LLM yet** — the connection/registration layer is built, the wire into the tool-calling loop isn't. See [ARCHITECTURE.md §2](../ARCHITECTURE.md#2-connecting-to-data-sources-tool-calling-connectors-and-mcp) for the verified detail.
+Admin → Connections also manages **MCP servers** — external tool/data sources reachable over MCP (OAuth2/PKCE-authenticated), beyond the CRM/knowledge connector contract. A project can enable one or more MCP servers alongside its knowledge scope, **but as of this writing an enabled MCP server's tools are not actually offered to the investigation's reasoning LLM yet** — the connection/registration layer is built, the wire into the tool-calling loop isn't. See [ARCHITECTURE.md §2](../ARCHITECTURE.md#_2-connecting-to-data-sources-tool-calling-connectors-and-mcp) for the verified detail.
 
 ## Ontologies
 

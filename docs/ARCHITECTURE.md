@@ -6,14 +6,14 @@ This document explains how XANA is built, from the inside out: it starts at the 
 
 ## Contents
 
-1. [The core: the workflow agent](#1-the-core-the-workflow-agent)
-2. [Connecting to data sources: tool calling, connectors, and MCP](#2-connecting-to-data-sources-tool-calling-connectors-and-mcp)
-3. [Configuring the LLM](#3-configuring-the-llm)
-4. [Embeddings and the vector store](#4-embeddings-and-the-vector-store)
-5. [OCR and document parsing](#5-ocr-and-document-parsing)
-6. [The RAG pipeline — tying it together](#6-the-rag-pipeline--tying-it-together)
-7. [Frontend — the interface to the workflow agent](#7-frontend--the-interface-to-the-workflow-agent)
-8. [Backend — hub and persistence](#8-backend--hub-and-persistence)
+1. [The core: the workflow agent](#_1-the-core-the-workflow-agent)
+2. [Connecting to data sources: tool calling, connectors, and MCP](#_2-connecting-to-data-sources-tool-calling-connectors-and-mcp)
+3. [Configuring the LLM](#_3-configuring-the-llm)
+4. [Embeddings and the vector store](#_4-embeddings-and-the-vector-store)
+5. [OCR and document parsing](#_5-ocr-and-document-parsing)
+6. [The RAG pipeline — tying it together](#_6-the-rag-pipeline-tying-it-together)
+7. [Frontend — the interface to the workflow agent](#_7-frontend-the-interface-to-the-workflow-agent)
+8. [Backend — hub and persistence](#_8-backend-hub-and-persistence)
 
 ---
 
@@ -75,9 +75,9 @@ A citation can never appear in a technician-facing answer unless it traces back 
 
 | Tool | What it searches | Where the data actually comes from | Retry-wrapped? |
 |---|---|---|---|
-| `search_knowledge` | This workbench's ingested manuals/knowledge-scope documents | **Qdrant + BM25** — already-indexed content (see [§6](#6-the-rag-pipeline--tying-it-together)), *not* a live connector call per query | Yes — `knowledge_lookup` sub-agent |
+| `search_knowledge` | This workbench's ingested manuals/knowledge-scope documents | **Qdrant + BM25** — already-indexed content (see [§6](#_6-the-rag-pipeline-tying-it-together)), *not* a live connector call per query | Yes — `knowledge_lookup` sub-agent |
 | `search_crm_history` | This case's CRM activities and notes | The CRM context fetched once when the workbench was enriched, via the backend → [CRM connector](architecture/connectors-crm-dynamics-ax.md) | Yes — `crm_lookup` sub-agent |
-| `search_web` | The public internet, for things not in manuals or CRM | Tavily (gated, optional — see [§5](#5-ocr-and-document-parsing) config) | Yes — `web_search` sub-agent |
+| `search_web` | The public internet, for things not in manuals or CRM | Tavily (gated, optional — see [§5](#_5-ocr-and-document-parsing) config) | Yes — `web_search` sub-agent |
 | `search_related_cases` | This account's previously *resolved* cases, any product | A case-history snapshot already fetched at workbench creation, re-ranked locally — never a fresh CRM call | No |
 | `search_service_reports` | Completed on-site service-visit reports for this exact machine | Same idea — a snapshot already fetched, re-ranked locally | No |
 | `read_attachment_details` | Already-extracted OCR/vision text from this workbench's uploaded photos/videos | Whatever `read_attachment_details_tool` finds already stored on the attachment — never triggers new OCR | No |
@@ -143,7 +143,7 @@ Manuals aren't always clean, embedded PDF text — scanned pages, screenshots, a
 
 **Ingestion-time vision captioning** (`src/rag/vision_caption.py`) is a *separate* concept from OCR — it doesn't extract text, it generates a natural-language caption for a diagram/schematic, via a self-hosted Ollama or OpenVINO Model Server (OVMS) serving a vision-language model (`qwen2.5vl:32b` by default). It's off by default (`VISION_CAPTION_ENABLED`), rate-limited to one concurrent call (CPU inference is slow — 100s+ per call measured live), has a hard output-token cap (small VL models don't reliably self-terminate), and trips a circuit breaker after repeated failures. Caption text is stamped with `contentOrigin` so it's never confused with authored manual text downstream.
 
-**Technician-upload OCR** is a third, separate path (`src/rag/step_media_ocr.py` / `media_processor.py`): photos and video a technician uploads to a workbench are OCR'd with LightOnOCR at upload time, and the *only* tool that reads the result (`read_attachment_details`, [§2](#2-connecting-to-data-sources-tool-calling-connectors-and-mcp)) never re-triggers OCR — it just reads what was already extracted.
+**Technician-upload OCR** is a third, separate path (`src/rag/step_media_ocr.py` / `media_processor.py`): photos and video a technician uploads to a workbench are OCR'd with LightOnOCR at upload time, and the *only* tool that reads the result (`read_attachment_details`, [§2](#_2-connecting-to-data-sources-tool-calling-connectors-and-mcp)) never re-triggers OCR — it just reads what was already extracted.
 
 ---
 
@@ -188,7 +188,7 @@ A few implementation details that matter for anyone extending this:
 - The BM25 index is built once per retrieval call and cached in-process for the scope of an investigation (`sparse_index.get_or_build_bm25_index`), not rebuilt per query variant.
 - Candidate-pool and rerank-pool sizes scale with the scoped corpus size (`retriever.derive_candidate_pool`, config-bounded min/max) rather than being flat constants — a huge knowledge base gets more retrieval depth than a tiny one, at predictable cost either way.
 - Chunking is more than fixed-size splitting: paragraphs are grouped by embedding-similarity ("semantic chunking") before size-based packing, table content is extracted and chunked separately from prose, and chunks spanning a page break are stitched back together. Adjacent-chunk overlap and exact-duplicate dropping exist in config (`CHUNKING_OVERLAP_CHARS`, `CHUNKING_DEDUP_ENABLED`) but both default off, since turning either on needs a `CHUNKING_SCHEMA_VERSION` bump to actually take effect on cached content.
-- Retrieval is never live-connector-backed at query time — see the note in [§2](#2-connecting-to-data-sources-tool-calling-connectors-and-mcp). Keeping Qdrant/BM25 current for a project's knowledge scope is a separate, explicit reindex action.
+- Retrieval is never live-connector-backed at query time — see the note in [§2](#_2-connecting-to-data-sources-tool-calling-connectors-and-mcp). Keeping Qdrant/BM25 current for a project's knowledge scope is a separate, explicit reindex action.
 
 ---
 
@@ -196,7 +196,7 @@ A few implementation details that matter for anyone extending this:
 
 Everything above happens because a technician clicked something in the Next.js frontend. The frontend's job is purely to be that interface — it never talks to the workflow agent or a connector directly, only to the backend.
 
-The shape a technician navigates: a **workspace** (Service & Support, Sales, ...) contains **projects** (each one scoping which skill, AI provider, ontology, and knowledge base apply — see [§3](#3-configuring-the-llm) and [§4](#4-embeddings-and-the-vector-store)), and inside a project, **workbenches** — one per case. Opening a workbench and clicking **Get repair steps** is what actually triggers the analysis graph in [§1](#1-the-core-the-workflow-agent); every subsequent chat message or step-status change is what triggers the continue graph.
+The shape a technician navigates: a **workspace** (Service & Support, Sales, ...) contains **projects** (each one scoping which skill, AI provider, ontology, and knowledge base apply — see [§3](#_3-configuring-the-llm) and [§4](#_4-embeddings-and-the-vector-store)), and inside a project, **workbenches** — one per case. Opening a workbench and clicking **Get repair steps** is what actually triggers the analysis graph in [§1](#_1-the-core-the-workflow-agent); every subsequent chat message or step-status change is what triggers the continue graph.
 
 Full detail: [Frontend architecture](architecture/frontend.md) · [5. Projects](guides/05-projects.md) · [6. Workbenches](guides/06-workbenches.md).
 
@@ -204,8 +204,8 @@ Full detail: [Frontend architecture](architecture/frontend.md) · [5. Projects](
 
 The NestJS backend is the hub every other piece goes through — the frontend never calls a connector or the workflow agent directly, and the workflow agent calls back into the backend rather than hitting a connector itself. It owns:
 
-- The OpenXANA connector registrations and field mappings that make [§2](#2-connecting-to-data-sources-tool-calling-connectors-and-mcp)'s `search_crm_history` and `search_knowledge` possible in the first place.
-- The `ai-providers` config that drives [§3](#3-configuring-the-llm).
+- The OpenXANA connector registrations and field mappings that make [§2](#_2-connecting-to-data-sources-tool-calling-connectors-and-mcp)'s `search_crm_history` and `search_knowledge` possible in the first place.
+- The `ai-providers` config that drives [§3](#_3-configuring-the-llm).
 - The `projects`/`ontology`/`mcp-servers` config referenced throughout.
 - All durable state, in **MongoDB** — users, projects, connectors, workbenches (including the investigation state described in §1-2), and the sales module.
 

@@ -17,12 +17,12 @@ Inside a workspace, an admin creates one or more **projects** — each project s
 
 - [Quick start](#quick-start)
 - [Deployment to Kubernetes](#deployment-to-kubernetes)
-- [1. Architecture](#1-architecture)
-- [2. Frontend](#2-frontend)
-- [3. Backend](#3-backend)
-- [4. Workflow agent](#4-workflow-agent)
-- [5. Connectors](#5-connectors)
-- [What's still pending](#whats-still-pending)
+- [1. Architecture](#_1-architecture)
+- [2. Frontend](#_2-frontend)
+- [3. Backend](#_3-backend)
+- [4. Workflow agent](#_4-workflow-agent)
+- [5. Connectors](#_5-connectors)
+- [What's still pending](#what39s-still-pending)
 - [Guides — using XANA](docs/guides/README.md) — setup → first login → users → connectors → projects → workbenches → sales module
 - [Docker deployment](docs/setup/docker-deployment.md)
 
