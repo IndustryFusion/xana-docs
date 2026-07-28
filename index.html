@@ -10,6 +10,53 @@
     :root { --theme-color: #3a5a7d; }
     .markdown-section pre { border-radius: 6px; }
     .markdown-section code { border-radius: 4px; }
+
+    /* Mermaid diagram wrapper + full-screen button */
+    .mermaid-wrap {
+      position: relative;
+      margin: 1em 0;
+    }
+    .mermaid-wrap .mermaid {
+      overflow-x: auto;
+    }
+    .mermaid-fullscreen-btn {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      z-index: 5;
+      border: 1px solid #d0d5db;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+      line-height: 1;
+      padding: 5px 8px;
+      opacity: 0.55;
+      transition: opacity 0.15s ease;
+    }
+    .mermaid-wrap:hover .mermaid-fullscreen-btn {
+      opacity: 1;
+    }
+    /* Full-screen presentation: center + scale the diagram to fill the screen */
+    .mermaid-wrap:fullscreen {
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .mermaid-wrap:fullscreen .mermaid {
+      overflow: visible;
+    }
+    .mermaid-wrap:fullscreen .mermaid svg {
+      width: auto !important;
+      height: auto !important;
+      max-width: 96vw;
+      max-height: 92vh;
+    }
+    .mermaid-wrap:fullscreen .mermaid-fullscreen-btn {
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
@@ -30,14 +77,61 @@
         noData: 'No results',
         depth: 4,
       },
-      mermaidConfig: {
-        theme: 'default',
+      // Wrap ```mermaid code blocks in a <div class="mermaid"> — actual SVG
+      // rendering happens afterward, in the doneEach hook below, since
+      // Mermaid's own render call is async and the markdown renderer here
+      // must return synchronously.
+      markdown: {
+        renderer: {
+          code: function (code, lang) {
+            if (lang === 'mermaid') {
+              return '<div class="mermaid-wrap"><div class="mermaid">' + code + '</div></div>';
+            }
+            return this.origin.code.apply(this, arguments);
+          },
+        },
       },
+      plugins: [
+        function (hook) {
+          hook.doneEach(function () {
+            if (!window.mermaid) return;
+            var nodes = document.querySelectorAll('.mermaid');
+            if (nodes.length === 0) return;
+            mermaid.run({ nodes: nodes }).then(function () {
+              addFullscreenButtons();
+            });
+          });
+        },
+      ],
     };
+
+    function addFullscreenButtons() {
+      document.querySelectorAll('.mermaid-wrap').forEach(function (wrap) {
+        if (wrap.querySelector('.mermaid-fullscreen-btn')) return; // already added
+        var btn = document.createElement('button');
+        btn.className = 'mermaid-fullscreen-btn';
+        btn.title = 'Full screen';
+        btn.setAttribute('aria-label', 'View diagram full screen');
+        btn.textContent = '⛶';
+        btn.addEventListener('click', function () {
+          if (document.fullscreenElement) {
+            document.exitFullscreen();
+          } else if (wrap.requestFullscreen) {
+            wrap.requestFullscreen();
+          } else if (wrap.webkitRequestFullscreen) {
+            wrap.webkitRequestFullscreen();
+          }
+        });
+        wrap.appendChild(btn);
+      });
+    }
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/docsify@4"></script>
-  <script src="https://cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/docsify-mermaid@2.0.1/dist/docsify-mermaid.js"></script>
+  <!-- Pinned versions — avoids version-drift breakage from floating @4/@latest tags -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/docsify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/plugins/search.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: false, theme: 'default' });
+  </script>
 </body>
 </html>
