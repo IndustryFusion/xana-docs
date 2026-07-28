@@ -1,102 +1,29 @@
-# Docker deployment — XANA full stack
+# Running it locally
 
-Run the entire XANA product from the repository root. All `docker compose` commands below are run from the repo root, not from `docs/`.
+> Part of [the documentation](../README.md) → [Architecture](../ARCHITECTURE.md). See also the [root README](../../README.md).
 
-> Part of [docs/](../README.md) → [Architecture](../ARCHITECTURE.md). See also the [root README](../../README.md).
+For a quick look at XANA — a demo, an evaluation, or local development — the whole stack (interface, hub, investigation engine, database, and connectors) can run together on a single machine using standard container tooling. This is the fastest way to see XANA end to end without provisioning a cluster.
 
-## Prerequisites
+## What you get
 
-- Docker Engine with Compose v2
-- Copy environment template: `cp .env.example .env` and set LLM + connector secrets
+A single-machine run brings up the full product: the interface, the hub, the investigation engine, the database, and the retrieval index, all wired together and ready to use as soon as an administrator finishes the setup steps in [1. Setup](../guides/01-setup.md).
 
-## Quick start
+Optionally, the same setup can bring up XANA's example connectors — a CRM connector and a knowledge-source connector — pre-registered and ready to configure, if you want to see a connected data source working rather than just the empty product.
 
-### Core stack (UI + API + MongoDB + workflow-agent + Qdrant)
+## Getting started
 
-```bash
-docker compose up --build
-```
+Local, single-machine deployment needs container tooling installed, and the same handful of things every deployment needs (see [1. Setup](../guides/01-setup.md)): an AI model to point at, an initial administrator, and — if you're using the example connectors — credentials for whatever CRM or knowledge system you're connecting.
 
-| Service | URL |
-|---------|-----|
-| Frontend | http://localhost:3000 |
-| Backend API | http://localhost:4000 |
-| Backend health | http://localhost:4000/health |
-| Workflow agent | http://localhost:8000/health |
-| MongoDB | localhost:27017 |
-| Qdrant | http://localhost:6333 |
-
-Default login: set via `APP_ADMIN_USERNAME`/`APP_ADMIN_PASSWORD` in `.env` before first startup (username defaults to `admin` if unset — always set a real password, don't rely on the code's zero-config fallback beyond local dev).
-
-### Full stack with OpenXANA connectors
-
-Requires CRM and wiki credentials in `.env`:
-
-```bash
-docker compose --profile connectors up --build
-```
-
-| Connector | Host URL | Internal URL (backend proxy) |
-|-----------|----------|------------------------------|
-| Web knowledge | http://localhost:8080 | http://web-connector:8080 |
-| Dynamics CRM | http://localhost:8081 | http://dynamics-connector:8080 |
-
-When `SEED_CONNECTORS=true` (default), a one-shot `seed-connectors` service registers both connectors for workspace `support-ai` in MongoDB.
-
-## Profiles
-
-| Profile | Services |
-|---------|----------|
-| *(default)* | mongo, qdrant, backend, frontend, workflow-agent |
-| `connectors` | web-connector, dynamics-connector, seed-connectors |
-
-## Environment
-
-All variables are documented in [`.env.example`](../../.env.example) (repo root). Key values:
-
-- `NEXT_PUBLIC_API_URL` — browser → backend (keep `http://localhost:4000` when using published ports)
-- `OPENAI_COMPATIBLE_*` — LLM for workbench AI and connector mapping
-- `CRM_*` — Dynamics connector credentials
-- `WIKI_USERNAME` / `WIKI_PASSWORD` — substituted into mounted web connector config
-
-## Volumes
-
-| Volume | Purpose |
-|--------|---------|
-| `mongo_data` | MongoDB persistence |
-| `qdrant_data` | Vector store |
-| `backend_uploads` | Workbench attachment uploads |
-| `workflow_agent_data` | LangGraph checkpoints + RAG cache |
-
-## Agent-only development
-
-For workflow-agent + Qdrant without the full stack, use the existing compose file:
-
-```bash
-cd workflow-agent
-docker compose up --build
-```
-
-That stack expects the NestJS backend on the host at port 4000 (`host.docker.internal`).
-
-## Project Dockerfiles
-
-| Project | Dockerfile |
-|---------|------------|
-| Backend | `backend/Dockerfile` |
-| Frontend | `frontend/Dockerfile` |
-| Workflow agent | `workflow-agent/Dockerfile` |
-| Web connector | `connectors/storages/web/Dockerfile` |
-| Dynamics CRM | `connectors/CRM/dynamics-ax/Dockerfile` |
-
-## Kubernetes / Rancher Fleet deployment
-
-The GitOps chart set for this stack lives in a sibling `GitOpsRepo` checkout (outside this repository), kept as the dedicated deployment repository for the environment pipeline.
+Beyond a quick local look, [Running it in production](kubernetes-deployment.md) covers how XANA runs as a real, scaled deployment.
 
 ## Troubleshooting
 
-- **Frontend cannot reach API** — confirm `NEXT_PUBLIC_API_URL=http://localhost:4000` and rebuild frontend (`docker compose build frontend`).
-- **CORS errors** — set `CORS_ORIGINS=http://localhost:3000` in `.env`.
-- **Connectors profile fails** — ensure `CRM_URL`, `CRM_USERNAME`, and `CRM_PASSWORD` are set.
-- **AI analyze fails** — set `OPENAI_COMPATIBLE_*` in `.env` and restart `workflow-agent`.
-- **Skip connector seeding** — set `SEED_CONNECTORS=false` in `.env`.
+- **The interface can't reach the hub** — double check that the address the interface is configured to use actually points at a reachable hub, and that the interface has been rebuilt since any change to that setting.
+- **Cross-origin errors in the browser** — the hub needs to know which origin the interface is served from; confirm that's configured to match.
+- **A connector fails to start** — confirm its credentials are set correctly for whichever CRM or knowledge system it's pointed at.
+- **AI-powered features fail** — confirm an AI model is configured and reachable (see [4. Connecting data sources](../guides/04-connectors.md)), then retry.
+
+## Where to go next
+
+- What each of these services actually does: [The interface](../architecture/frontend.md) · [The hub](../architecture/backend.md) · [The investigation engine](../architecture/workflow-agent.md) · [Connectors](../architecture/connectors-web.md)
+- Production deployment: [Running it in production](kubernetes-deployment.md)

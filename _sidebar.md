@@ -12,22 +12,22 @@
 
 - **Architecture**
   - [Overview](docs/ARCHITECTURE.md)
-  - [Frontend](docs/architecture/frontend.md)
-  - [Backend](docs/architecture/backend.md)
-  - [Workflow agent](docs/architecture/workflow-agent.md)
+  - [The interface](docs/architecture/frontend.md)
+  - [The hub](docs/architecture/backend.md)
+  - [The investigation engine](docs/architecture/workflow-agent.md)
   - [Connector: Web / storage](docs/architecture/connectors-web.md)
-  - [Connector: CRM (Dynamics AX)](docs/architecture/connectors-crm-dynamics-ax.md)
+  - [Connector: CRM (Dynamics)](docs/architecture/connectors-crm-dynamics-ax.md)
 
 - **Deployment**
-  - [Docker](docs/setup/docker-deployment.md)
-  - [Kubernetes](docs/setup/kubernetes-deployment.md)
+  - [Running it locally](docs/setup/docker-deployment.md)
+  - [Running it in production](docs/setup/kubernetes-deployment.md)
 
-- **Service references**
-  - [Backend README](backend/README.md)
-  - [Frontend README](frontend/README.md)
-  - [Workflow agent README](workflow-agent/README.md)
-  - [Workflow agent integration](workflow-agent/INTEGRATION.md)
-  - [CRM connector README](connectors/CRM/dynamics-ax/README.md)
-  - [Web connector README](connectors/storages/web/README.md)
+- **Service details**
+  - [The hub](backend/README.md)
+  - [The interface](frontend/README.md)
+  - [The investigation engine](workflow-agent/README.md)
+  - [How the engine and the hub work together](workflow-agent/INTEGRATION.md)
+  - [CRM connector](connectors/CRM/dynamics-ax/README.md)
+  - [Web / storage connector](connectors/storages/web/README.md)
 
 - [Docs index](docs/README.md)

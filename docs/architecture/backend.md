@@ -1,40 +1,30 @@
-# Backend
+# The hub
 
-> [docs](../README.md) → [Architecture](../ARCHITECTURE.md) → Backend
-> See also: [`backend/README.md`](../../backend/README.md) for MongoDB setup, migration, and running tests.
+> [Documentation](../README.md) → [Architecture](../ARCHITECTURE.md) → The hub
+> See also: [service details](../../backend/README.md) for a closer look at what it's responsible for.
 
-NestJS, port 4000. This is the API hub every other piece of XANA goes through — the frontend talks to nothing else, the workflow-agent calls back into it for CRM/knowledge data rather than hitting connectors directly, and it's the only service with durable state (MongoDB).
+This is the central API every other piece of XANA goes through — the interface talks to nothing else, the investigation engine calls back into it for CRM and knowledge lookups rather than reaching connected systems directly, and it's the only piece with durable, lasting state.
 
-## Modules (`backend/src/`)
+## What it's responsible for
 
-| Module | Purpose |
+| Area | What it covers |
 |---|---|
-| `auth` | DB-backed users with hashed passwords and role-gated CRUD; custom HMAC-signed session tokens. |
-| `users` | User CRUD, roles, temporary passwords, last-admin protection. |
-| `connectors` | Registers CRM/knowledge connectors via the OpenXANA manifest contract; AI-assisted field mapping. |
-| `proxy` | HTTP proxy to connector base URLs, with a TTL-based response cache. |
-| `knowledge` | Browse connector folders, download PDF/DOCX content. |
-| `support` | Cases, accounts, per-case product mappings — the Service & Support vertical's data layer. |
-| `workbenches` | Workbench CRUD; bridges to the workflow-agent for analyze/continue. |
-| `sales` | The Sales AI vertical — appointment reads, report building, AI insights, PDF rendering, email delivery, the weekly cron. Isolated from `support`/`workbenches`. |
-| `projects` | Ties a skill, AI provider, ontology, MCP servers, and knowledge scope together into one project; also owns the per-project knowledge reindex flow (`POST /projects/:id/reingest`, surfaced as the reingest control on each project card in `frontend/app/support/page.tsx`). |
-| `skills` | Catalog of available LangGraph skills (workflow-agent's `registry.py`). |
-| `ontology` | Domain-ontology graphs (classes/edges) a project can select. |
-| `ai-providers` | Pluggable per-project LLM provider config, encrypted API key. Resolved per project (`AiProvidersService.resolveForProject`) and passed through to the workflow-agent on every analyze/continue call — **but not used for connector field mapping or sales insights**, see the `ai` module below. |
-| `ai` | A separate, simpler LLM helper (`AiService.completeJson`) that always calls the single global `OPENAI_COMPATIBLE_*` env config directly — no per-project resolution. This is what connector field-mapping actually calls, and what the sales module's AI executive summary calls (there's no sales "project" to resolve a per-project `ai-providers` entry from). Don't assume "AI provider" always means the `ai-providers` store — check which of these two a given feature actually imports. |
-| `mcp-servers` | Generic OAuth2/PKCE MCP client registration. Configuration only today — see the honest note in [ARCHITECTURE.md §2](../ARCHITECTURE.md#_2-connecting-to-data-sources-tool-calling-connectors-and-mcp) on why an enabled MCP server isn't yet callable by an investigation. |
-| `migrations` | One-time startup seeding (`startup-migration.service.ts`), not an ongoing migration tool: base ontology, an `ai-providers` entry from `OPENAI_COMPATIBLE_*` env vars, and the initial admin user (see [2. First login](../guides/02-first-login.md)) — each step is a no-op once its target collection already has data. |
-| `developer` | An internal debug-tooling surface backing `frontend/app/developer`. |
-| `database` | Mongo connection/schemas, legacy JSON→Mongo migration. |
+| People and access | Accounts, roles, sessions — who can configure XANA versus who works cases. |
+| Connected systems | Registering CRM and knowledge connectors, and translating each one's own field names into a consistent shape the rest of XANA can rely on. |
+| Case data | Cases, accounts, and how they map to products — the data layer behind Service & Support. |
+| Workbenches | Creating and managing workbenches, and handing them off to the investigation engine when it's time to analyze or continue a case. |
+| Sales | The Sales workspace: appointment data, report building, AI-generated summaries, PDF rendering, and delivery — kept isolated from Service & Support end to end. |
+| Projects | Tying a skill, an AI model, domain knowledge, integrations, and a knowledge scope together into one project a technician can work inside — including keeping that project's knowledge base up to date on request. |
+| Skills, domain knowledge, and integrations | The catalog of available investigation skills, the domain-knowledge graphs a project can select, and registered third-party tool integrations. |
+| AI configuration | Per-project AI model configuration, stored securely. |
+| Setup | One-time initial setup on first startup — seeding the base domain knowledge, an initial AI configuration, and the first admin account (see [2. First login](../guides/02-first-login.md)) — each a no-op once already done. |
 
-Persistence is MongoDB — see `backend/src/database/schemas/` for the full schema list (11 collections as of this writing).
+## Why it's the hub, not a thin pass-through
 
-## Why it's the hub, not a thin proxy
-
-The backend, not the frontend or the workflow-agent, owns the OpenXANA manifest resolution, the connector response cache, and role/session enforcement. Both the frontend and the workflow-agent trust it to have already resolved "which field on this CRM means what" — neither re-implements that logic.
+The hub — not the interface, not the investigation engine — owns figuring out what a field in your connected CRM or knowledge system actually means, and caches responses from those systems sensibly. Both the interface and the investigation engine trust that translation has already happened; neither re-implements it.
 
 ## Where to go next
 
-- What calls into it: [Frontend](frontend.md)
-- What it calls out to for AI: [Workflow agent](workflow-agent.md)
-- What external systems it proxies to: [Connectors](connectors-web.md), [CRM connector](connectors-crm-dynamics-ax.md)
+- What calls into it: [The interface](frontend.md)
+- What it calls out to for AI: [The investigation engine](workflow-agent.md)
+- What external systems it connects to: [Connectors](connectors-web.md), [CRM connector](connectors-crm-dynamics-ax.md)

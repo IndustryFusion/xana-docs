@@ -1,93 +1,85 @@
 # XANA Business
 
-XANA Business is an AI-agent platform installed inside a company to connect its existing data sources — CRM and knowledge bases (manuals, wikis, documents) today, with ERP planned (`connectors/ERP/` is a placeholder, not yet implemented) — and turn them into AI-powered **workspaces** for different parts of the business.
+Most companies already have what they need to solve a case: a CRM full of history, and a shelf of manuals nobody has time to search. XANA sits on top of both — CRM and knowledge sources today, with ERP as a planned future connector type — and turns them into an AI **workspace** — a place where a person opens a case, asks XANA to investigate, and gets back a step-by-step answer with a citation for every claim, back to the exact CRM note or manual page it came from. No black-box answers: if XANA can't point to where it read something, it doesn't say it.
 
-Today that's:
+XANA is organized as a set of **workspaces**, one per part of the business:
 
-- **Service & Support** — the most complete workspace. Connect a CRM and knowledge sources, open a **workbench** for a case, run an AI **investigation** that produces an evidence-backed, step-by-step repair guide with citations back to CRM notes and manuals.
-- **Sales** — an early-stage workspace, starting with an automated weekly sales report generated from CRM appointment data.
-- **Operations** — on the roadmap, not yet built.
-- **Academy** — a longer-term workspace idea, not yet built.
+- **Service & Support** — the workspace in production use today. Connect a CRM and a knowledge base, open a **workbench** for a case, and let XANA's investigation walk a technician through an evidence-backed repair, citing the CRM notes and manuals it drew from.
+- **Sales** — just getting started, with an automated weekly sales report built from CRM appointment data.
+- **Operations** — on the roadmap.
+- **Academy** — a longer-term idea, not built yet.
 
-Inside a workspace, an admin creates one or more **projects** — each project scopes a connector, an AI provider, a knowledge base, and (in Service & Support) a skill graph. Inside a project, users create **workbenches**, one per task. In Service & Support, for example, a workbench is tied to a CRM case (and optionally a FusionPass / Process Digital Twin incident) and drives the AI investigation into a step-by-step troubleshooting guide.
+Inside a workspace, an admin sets up one or more **projects** — each one scoping a connected data source, an AI model, a knowledge base, and (for Service & Support) which investigation skill it runs. From there, day-to-day users open **workbenches** — one per task. In Service & Support, a workbench is tied to a CRM case, and that's what the investigation runs against.
 
 ## Contents
 
-*(kept up to date as documentation is added — see [docs/README.md](docs/README.md) for the full index)*
+*(kept up to date as documentation is added — see the [full documentation index](docs/README.md))*
 
-- [Quick start](#quick-start)
-- [Deployment to Kubernetes](#deployment-to-kubernetes)
-- [1. Architecture](#_1-architecture)
-- [2. Frontend](#_2-frontend)
-- [3. Backend](#_3-backend)
-- [4. Workflow agent](#_4-workflow-agent)
+- [How XANA runs](#how-xana-runs)
+- [Deploying to a real environment](#deploying-to-a-real-environment)
+- [1. How XANA is built](#_1-how-xana-is-built)
+- [2. The interface](#_2-the-interface)
+- [3. The hub](#_3-the-hub)
+- [4. The investigation engine](#_4-the-investigation-engine)
 - [5. Connectors](#_5-connectors)
-- [What's still pending](#what39s-still-pending)
+- [Still on the roadmap](#still-on-the-roadmap)
 - [Guides — using XANA](docs/guides/README.md) — setup → first login → users → connectors → projects → workbenches → sales module
-- [Docker deployment](docs/setup/docker-deployment.md)
+- [Deployment](docs/setup/docker-deployment.md)
 
-## Quick start
+## How XANA runs
 
-```bash
-./dev.sh               # docker infra (Langfuse/Qdrant/Ollama/Dynamics connector — not MongoDB, see below) + all 4 local services, hot-reload, in tmux session "xana-dev"
-./dev.sh --no-docker    # skip the docker infra step (e.g. already running)
-./dev.sh --no-langfuse  # skip only the Langfuse tracing stack
-./dev.sh --stop         # stop the tmux session (docker keeps running)
-./dev.sh --status       # show docker + tmux status
-tmux attach -t xana-dev # reattach after detaching
-```
+XANA is a handful of small, independent services — an interface, a central hub, an investigation engine, and one adapter per external system it connects to — that run together as one product. For a quick local look, the whole stack can be brought up on a single machine; for a real deployment, each service runs as its own container, scaled and managed independently. See [Deployment](docs/setup/docker-deployment.md) for both paths and what you'll need to configure first.
 
-That's the native/hot-reload path. For a deployment-like run instead, `docker compose up --build` — see [Docker deployment](docs/setup/docker-deployment.md). Full prerequisites and `.env` setup: [1. Setup](docs/guides/01-setup.md).
+## Deploying to a real environment
 
-## Deployment to Kubernetes
+Beyond a local look, XANA runs on Kubernetes, with each service deployed and upgraded independently and the cluster's state managed through Git rather than by hand — so a deployment is reviewable and reversible the same way a code change is.
 
-Beyond local dev, XANA runs on Kubernetes as one Helm chart per service, reconciled via Rancher Fleet (GitOps continuous delivery) rather than anyone running `kubectl`/`helm` by hand against the cluster.
+The cluster configuration itself lives outside this repository, in a dedicated deployment repo, kept deliberately separate from the application code here: what the product *is* and how it's *currently running* are reviewed on their own timelines.
 
-The Kubernetes manifests themselves are **not part of this repository** — they live in a separate, dedicated deployment repo: **[GitOpsRepo](https://github.com/IndustryFusion/GitOpsRepo)** (a sibling checkout next to this one, `../GitOpsRepo`). Application code (here) and deployed cluster state (there) are versioned and reviewed independently, on purpose.
-
-→ [docs/setup/kubernetes-deployment.md](docs/setup/kubernetes-deployment.md) for how GitOpsRepo is structured, deploy order, secrets, and a manual (no-Fleet) install.
+→ [Deployment](docs/setup/kubernetes-deployment.md) for the shape of that setup and what to expect from it.
 
 ---
 
-Below is a point-by-point tour of the five things that make up this repo — what each one does and how it fits with the rest. Each point links to its full write-up in `docs/`.
+Below is a tour of the five things that make up XANA — what each one does and how it fits with the rest. Each point links to its full write-up in the documentation.
 
-## 1. Architecture
+## 1. How XANA is built
 
-The technical core of this application: the LangGraph workflow agent, how its reasoning loop calls tools to reach CRM/knowledge data and MCP servers, how the LLM/embedding model/OCR are configured, and the hybrid RAG pipeline that grounds every answer in a citation.
+The technical core: the investigation engine's reasoning loop, how it decides what to look up as it works a case, how the underlying AI model is configured, and the retrieval pipeline that grounds every answer in a citation instead of a guess.
 
-→ [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+→ [Architecture overview](docs/ARCHITECTURE.md)
 
-## 2. Frontend
+## 2. The interface
 
-The Next.js (App Router) UI — the only thing a user ever opens, and the only piece that talks to the backend directly. Renders the workspace selector, the Service & Support project/workbench pages, the Sales report config page, and the Admin area.
+The web application — the only thing anyone using XANA ever opens, and the only piece that talks to the hub directly. This is where the workspace selector, the Service & Support project and workbench screens, the Sales report configuration, and the admin area all live.
 
-→ [docs/architecture/frontend.md](docs/architecture/frontend.md)
+→ [Interface architecture](docs/architecture/frontend.md)
 
-## 3. Backend
+## 3. The hub
 
-The NestJS API hub, backed by MongoDB. Everything durable — users, projects, connectors, workbenches, sales reports, AI-provider config — lives here. It's the only piece that talks to connectors and the workflow-agent.
+The central API and system of record. Everything durable — people, projects, connected data sources, workbenches, sales reports, AI configuration — lives here. It's the only piece that talks to connected systems and to the investigation engine, so nothing else has to.
 
-→ [docs/architecture/backend.md](docs/architecture/backend.md)
+→ [Hub architecture](docs/architecture/backend.md)
 
-## 4. Workflow agent
+## 4. The investigation engine
 
-The Python/FastAPI/LangGraph service that actually runs the AI investigation — skill-scoped graphs, hybrid RAG (Qdrant + BM25) over ingested manuals, OCR, and optional web search. Called by the backend; never called directly by the frontend.
+The service that actually runs an investigation: skill-specific reasoning graphs, a hybrid retrieval pipeline over your ingested manuals, document understanding (including scanned pages and diagrams), and optional web search when your own knowledge base doesn't have the answer. It's called by the hub — it's never reachable directly.
 
-→ [docs/architecture/workflow-agent.md](docs/architecture/workflow-agent.md)
+→ [Investigation engine architecture](docs/architecture/workflow-agent.md)
 
 ## 5. Connectors
 
-External systems that plug into XANA over the OpenXANA manifest contract — each a separate deployable, registered with the backend by URL. Two ship today:
+External systems plug into XANA through a shared, self-describing contract — each one a separate, independently deployable adapter, registered with the hub by address. Two ship today:
 
-- **Web / storage** — authenticated wiki/document-portal connector → [docs/architecture/connectors-web.md](docs/architecture/connectors-web.md)
-- **CRM (Dynamics AX)** — Microsoft Dynamics CRM adapter, ADFS auth → [docs/architecture/connectors-crm-dynamics-ax.md](docs/architecture/connectors-crm-dynamics-ax.md)
+- **Web / document storage** — an authenticated connector for wikis and document portals → [Connector: web / storage](docs/architecture/connectors-web.md)
+- **CRM (Microsoft Dynamics)** — a connector for Microsoft Dynamics-based CRM systems → [Connector: CRM (Dynamics)](docs/architecture/connectors-crm-dynamics-ax.md)
 
----
-
-## What's still pending
-
-- **FusionPass / Process Twin integration via the Industry Fusion Data Space** — these pipelines aren't wired to a real backend yet (see "What's real vs. demo" in [Frontend architecture](docs/architecture/frontend.md)); connecting them through the Industry Fusion Data Space is planned, not done.
-- **Keycloak / IFRIC Registry authentication** — today's auth is XANA's own DB-backed users with a custom HMAC-signed session token (see [Backend architecture](docs/architecture/backend.md)). Extending or replacing it with Keycloak / IFRIC Registry — covering both individual user auth and company/tenant-level identity and setup — is planned, not done.
+Building a new one against the same contract is how XANA connects to a data source it doesn't ship an adapter for today.
 
 ---
 
+## Still on the roadmap
+
+- **Deeper integration with connected process/incident data** — some workspace surfaces show illustrative data today rather than a live feed; wiring them to a real, shared data layer is planned. See "What's real vs. illustrative" in [Interface architecture](docs/architecture/frontend.md).
+- **Enterprise identity and single sign-on** — XANA manages its own users today; extending that to your company's existing identity provider, for both individual sign-in and organization-level setup, is planned.
+
+---

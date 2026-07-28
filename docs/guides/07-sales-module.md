@@ -1,35 +1,35 @@
 # 7. Sales module
 
-> [docs](../README.md) → [Guides](README.md) → Sales module
+> [Documentation](../README.md) → [Guides](README.md) → Sales module
 > Previous: [6. Workbenches](06-workbenches.md)
 
-**Sales AI** (`/sales`) is a separate workspace vertical from Support AI — a different purpose, different backend module (`backend/src/sales/`), kept isolated at the code level. It reuses the same CRM connector and AI-provider infrastructure from [4. Connecting data sources](04-connectors.md), but nothing else from Support/workbenches.
+**Sales** is a separate workspace from Service & Support — a different purpose, kept isolated at every level. It reuses the same CRM connector and AI-model infrastructure from [4. Connecting data sources](04-connectors.md), but nothing else from Service & Support or workbenches.
 
-## What it does today: automated Weekly Sales Report
+## What it does today: the automated weekly sales report
 
-A phase-1 deliverable: every Friday at 13:00 Europe/Berlin (ahead of the stakeholder's 14:00 Berlin deadline), the backend:
+A phase-one deliverable: every Friday, on a fixed schedule, XANA:
 
-1. Queries the configured CRM connector's Sales/Appointments data (a separate entity from the Service/case data Support reads — its own isolated `Services/SalesService.cs` in `connectors/CRM/dynamics-ax/`, routes mapped in `Program.cs`) for the past week's appointments belonging to a configured roster of sales managers.
-2. Categorizes appointments by matching their subject against a configured set of exact title prefixes (e.g. "Bestandskundenbesuch", "Vorführung (B)").
-3. Computes trend deltas (this week vs. trailing 4-week average) and flags stalled-pipeline accounts stuck at a non-final stage for 21+ days.
-4. Generates an AI executive summary of the week alongside the mechanical stats — via the same global, env-configured LLM helper used for connector field mapping ([4](04-connectors.md)), **not** the per-project `ai-providers` store, since there's no sales "project" to resolve one from.
-5. Renders a bilingual (German + English) PDF report and emails it to a configured recipient list via the Gmail API.
+1. Reads the connected CRM's appointment data — a separate slice of your CRM from the case data Service & Support reads — for the past week, for a configured roster of sales managers.
+2. Categorizes appointments against a configured set of appointment types.
+3. Computes week-over-week trends and flags accounts whose pipeline stage has been stuck for an extended period.
+4. Generates an AI executive summary of the week alongside the mechanical stats, using the deployment's shared default AI model rather than a per-project one, since there's no Sales "project" to configure one for.
+5. Renders a bilingual report as a PDF and emails it to a configured list of recipients.
 
 ## Configuring it
 
-**Sales → (config page)** (`/sales`), admin-facing:
+From the Sales workspace's configuration page, administrators can set:
 
-- **CRM connector** — pick which registered CRM connector to query.
+- **CRM connector** — which registered CRM connector to read from.
 - **Recipients** — who receives the emailed report.
-- **Managers** — the roster of sales managers to cover (name + CRM email; resolved to a CRM system-user at run time, not a hardcoded id).
-- **Test report** — run the pipeline on demand (dry-run, or actually send) without waiting for Friday, useful for verifying config changes before the next scheduled run.
+- **Managers** — the roster of sales managers to cover.
+- **Test report** — run the pipeline on demand, without waiting for the next scheduled run, useful for checking a configuration change before it goes out for real.
 
-There's no separate "sales" user role gating this — see [3. User management](03-user-management.md) — access is via the workspace, same as Support AI.
+There's no separate "sales" role gating this — see [3. User management](03-user-management.md) — access is through the workspace, the same as Service & Support.
 
-## Email setup (separate from the main `.env`)
+## Email delivery
 
-Gmail-API delivery needs its own config, loaded from `backend/.env.sales` (copy from `backend/.env.sales.example`), not the main `backend/.env`: a Google Workspace service-account key file (`SALES_GOOGLE_SERVICE_ACCOUNT_KEY_FILE`, domain-wide delegation with the `https://mail.google.com/` scope) plus `SALES_GOOGLE_IMPERSONATE_SUBJECT` (the mailbox the service account authenticates as) and `SALES_MAIL_FROM` (the visible sender, which can differ if it's a configured "Send As" alias). Everything else the report needs — recipients, manager roster, category prefixes, CRM connector id — lives in MongoDB (the config page above), not in this file. Without it, PDF generation and the AI summary still work; only the actual email send will fail.
+Sending the report by email is configured separately from the rest of a deployment, since it depends on your organization's own email setup rather than anything else XANA needs. Everything else the report needs — recipients, manager roster, categories, which CRM connector to use — is regular project-style configuration. Without email delivery configured, report generation still works; only the send step won't.
 
 ## Why it's isolated
 
-Per this repo's sales/support isolation rule, sales code must not touch `backend/src/support/`, `backend/src/workbenches/`, `frontend/app/support/`, or the workflow-agent's support skill, and vice versa. Shared infra (`ProxyService`/`ConnectorsService`, generic Mongo/auth infra) is reused only additively — the sales-specific CRM extension lives entirely in its own `Services/SalesService.cs`, which goes further than just not editing the support-facing connector code: its ADFS login/cookie logic is **intentionally duplicated** rather than extracted into anything shared, so a change to one can never affect the other (see [CRM connector architecture](../architecture/connectors-crm-dynamics-ax.md)).
+Sales code is kept from ever touching Service & Support's code or data, and vice versa — shared infrastructure (like the underlying connector framework and general account/database plumbing) is reused only in ways that add to it, never in ways that change how Service & Support already depends on it. That isolation goes all the way down to the CRM connector itself: the Sales-specific extension to the CRM connector is intentionally kept separate from the Service & Support–facing one, including its own sign-in handling, so a change to one can never affect the other (see [CRM connector architecture](../architecture/connectors-crm-dynamics-ax.md)).

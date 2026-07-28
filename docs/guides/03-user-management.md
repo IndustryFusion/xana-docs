@@ -1,31 +1,31 @@
 # 3. User management
 
-> [docs](../README.md) → [Guides](README.md) → User management
+> [Documentation](../README.md) → [Guides](README.md) → User management
 > Previous: [2. First login](02-first-login.md) · Next: [4. Connecting data sources](04-connectors.md)
 
-Users are managed at **Admin → Users** (`/admin/users`), admin-only.
+Users are managed from the admin area, by administrators only.
 
 ## Roles
 
-Each user has one or more roles: `admin`, `technician`. A user can hold both.
+Each person has one or more roles:
 
-- **admin** — manages connectors, AI providers, MCP servers, ontologies, users, and projects (the setup side of XANA).
-- **technician** — works inside projects: opens workbenches, runs investigations, walks through repair steps.
+- **Administrator** — manages connected data sources, AI models, integrations, domain knowledge, people, and projects (the setup side of XANA).
+- **Technician** — works inside projects: opens workbenches, runs investigations, walks through repair steps.
 
-There is no separate "sales" role — access to the Sales AI workspace isn't gated by a distinct role in the same way; see [7. Sales module](07-sales-module.md).
+A person can hold both. There is no separate "sales" role — access to the Sales workspace isn't gated the same explicit way; see [7. Sales module](07-sales-module.md).
 
-## Adding a user
+## Adding a person
 
-1. Admin → Users → **Add user**.
-2. Fill in first name, last name, username, at least one role, and a **temporary password** (min. 8 characters).
-3. The new user must change that temporary password on their first login — this is enforced server-side (`mustChangePassword` is always set `true` for admin-created accounts), separately from the one-time env-seeded admin from [2. First login](02-first-login.md), which is exempt.
+1. From the admin area, add a new user.
+2. Fill in their name, username, at least one role, and a temporary password.
+3. They'll be required to set their own password the first time they sign in — the one exception is the very first, initial administrator account from [2. First login](02-first-login.md), which isn't required to.
 
-Share the username + temporary password with the person out of band; they'll be prompted to set their own password the first time they log in.
+Share the username and temporary password out of band; they'll be prompted to choose their own password on first sign-in.
 
 ## Editing, resetting, removing
 
-- **Edit** changes name, username, or roles.
-- **Reset password** sets a new temporary password and forces a change on next login — use this if someone is locked out.
+- **Edit** changes a person's name, username, or roles.
+- **Reset password** issues a new temporary password and requires a change on next sign-in — use this if someone is locked out.
 - **Remove** deletes the account.
 
-**Last-admin protection:** the backend refuses to demote or remove the last remaining admin account. If you need to hand off admin duties, promote another user to `admin` first, then remove or demote the old one.
+**There's always at least one administrator.** XANA won't let you demote or remove the last remaining administrator account — promote someone else to administrator first if you need to hand off that responsibility.

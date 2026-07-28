@@ -1,66 +1,21 @@
-# XANA Business Backend
+# The hub
 
-NestJS API for support workbenches, CRM connectors, knowledge browsing, and resolution workflows.
+> Part of [the documentation](../docs/README.md) → [Architecture: the hub](../docs/architecture/backend.md).
 
-## MongoDB (required)
+The hub is XANA's central API and system of record — the piece every other service goes through, and the only one with durable, lasting state.
 
-All durable backend state is stored in MongoDB. Set these environment variables in `.env`:
+## What lives here
 
-```env
-MONGODB_URI=mongodb://localhost:27017/xana-business
-# Optional when the database name is not in the URI:
-# MONGODB_DB_NAME=xana-business
-```
+Everything that needs to persist across sessions is stored centrally and owned by the hub: people and their roles, connected CRM and knowledge systems and how their fields translate into a consistent shape, projects and their configuration, workbenches and their full investigation history, and the Sales workspace's report configuration and history.
 
-### Collections
+Short-lived, in-memory housekeeping (like response caching for a connector) lives alongside it but isn't part of that durable record.
 
-| Collection | Purpose |
-|------------|---------|
-| `workbenches` | Support workbench sessions (steps, analysis, messages) |
-| `connectors` | Registered OpenXANA connector configs |
-| `connector_response_cache` | Cached connector HTTP responses (7-day TTL by default) |
-| `resolution_states` | Case copilot analyses, feedback, drafts |
-| `case_support_state` | Per-case product mappings and attachment metadata |
-| `connector_mappings` | AI-generated CRM endpoint/field mappings |
+## Bringing forward existing data
 
-Short-lived in-memory caches (knowledge folder TTL, in-flight request dedup) are **not** stored in MongoDB.
+If a deployment is moving from an earlier, file-based way of storing this data into the database-backed hub, that migration is a one-time, explicit step — it never overwrites data that's already there, and running it again after it's already succeeded is a safe no-op.
 
-### Migrate legacy JSON files
+## Where to go next
 
-If you have existing data under `.data/`, migrate once:
-
-**Option A — on startup**
-
-```env
-MONGODB_MIGRATE_FROM_FILES=true
-```
-
-**Option B — CLI script**
-
-```bash
-MONGODB_URI=mongodb://localhost:27017/xana-business npx ts-node scripts/migrate-json-to-mongo.ts
-```
-
-Migration skips any collection that already contains documents.
-
-### Connector cache TTL
-
-```env
-# Default: 604800 (7 days). Set to 0 to disable TTL index.
-CONNECTOR_CACHE_TTL_SECONDS=604800
-```
-
-## Run
-
-```bash
-npm install
-npm run start:dev
-```
-
-## Tests
-
-```bash
-npm test
-```
-
-Uses `mongodb-memory-server` for repository integration tests (no external MongoDB required for tests).
+- How it fits with the rest of XANA: [Architecture: the hub](../docs/architecture/backend.md)
+- What calls into it: [The interface](../docs/architecture/frontend.md)
+- What it calls out to for AI: [The investigation engine](../docs/architecture/workflow-agent.md)
