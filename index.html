@@ -11,7 +11,7 @@
     .markdown-section pre { border-radius: 6px; }
     .markdown-section code { border-radius: 4px; }
 
-    /* Mermaid diagram wrapper + full-screen button */
+    /* Mermaid diagram wrapper + expand button */
     .mermaid-wrap {
       position: relative;
       margin: 1em 0;
@@ -37,25 +37,50 @@
     .mermaid-wrap:hover .mermaid-fullscreen-btn {
       opacity: 1;
     }
-    /* Full-screen presentation: center + scale the diagram to fill the screen */
-    .mermaid-wrap:fullscreen {
+
+    /* Expand overlay — a plain in-page modal, not the native Fullscreen API
+       (which is inconsistent across browsers/embedding contexts and hid the
+       diagram entirely for some users). Fully our own CSS, no browser quirks. */
+    .mermaid-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
       background: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 32px;
     }
-    .mermaid-wrap:fullscreen .mermaid {
-      overflow: visible;
+    .mermaid-overlay-inner {
+      /* Concrete size, not just max-width/max-height — the cloned SVG's own
+         width="100%" needs a real, resolvable basis to size against, or it
+         collapses to 0 (a shrink-to-fit container has no basis on its own). */
+      width: 90vw;
+      height: 85vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .mermaid-wrap:fullscreen .mermaid svg {
-      width: auto !important;
-      height: auto !important;
-      max-width: 96vw;
-      max-height: 92vh;
+    .mermaid-overlay-inner svg {
+      /* Forced to 100%/100% of the concrete box above; the SVG's own viewBox
+         + default preserveAspectRatio scales it to fit without distortion. */
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100%;
+      max-height: 100%;
     }
-    .mermaid-wrap:fullscreen .mermaid-fullscreen-btn {
-      opacity: 1;
+    .mermaid-overlay-close {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      font-size: 22px;
+      line-height: 1;
+      background: none;
+      border: 1px solid #d0d5db;
+      border-radius: 6px;
+      padding: 6px 12px;
+      cursor: pointer;
+      color: #333;
     }
   </style>
 </head>
@@ -110,20 +135,54 @@
         if (wrap.querySelector('.mermaid-fullscreen-btn')) return; // already added
         var btn = document.createElement('button');
         btn.className = 'mermaid-fullscreen-btn';
-        btn.title = 'Full screen';
-        btn.setAttribute('aria-label', 'View diagram full screen');
+        btn.title = 'Expand diagram';
+        btn.setAttribute('aria-label', 'View diagram larger');
         btn.textContent = '⛶';
         btn.addEventListener('click', function () {
-          if (document.fullscreenElement) {
-            document.exitFullscreen();
-          } else if (wrap.requestFullscreen) {
-            wrap.requestFullscreen();
-          } else if (wrap.webkitRequestFullscreen) {
-            wrap.webkitRequestFullscreen();
-          }
+          var svg = wrap.querySelector('.mermaid svg');
+          if (svg) openDiagramOverlay(svg);
         });
         wrap.appendChild(btn);
       });
+    }
+
+    function openDiagramOverlay(svgEl) {
+      var overlay = document.createElement('div');
+      overlay.className = 'mermaid-overlay';
+
+      var closeBtn = document.createElement('button');
+      closeBtn.className = 'mermaid-overlay-close';
+      closeBtn.textContent = '✕ Close';
+      closeBtn.setAttribute('aria-label', 'Close');
+
+      var svgClone = svgEl.cloneNode(true);
+      // Mermaid sets its own inline width/style (sized for its original,
+      // in-flow container) — drop that so our CSS is the only thing sizing
+      // the clone inside the overlay.
+      svgClone.removeAttribute('style');
+      svgClone.removeAttribute('width');
+      svgClone.removeAttribute('height');
+
+      var inner = document.createElement('div');
+      inner.className = 'mermaid-overlay-inner';
+      inner.appendChild(svgClone);
+
+      overlay.appendChild(closeBtn);
+      overlay.appendChild(inner);
+      document.body.appendChild(overlay);
+
+      function close() {
+        overlay.remove();
+        document.removeEventListener('keydown', onKeydown);
+      }
+      function onKeydown(e) {
+        if (e.key === 'Escape') close();
+      }
+      closeBtn.addEventListener('click', close);
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) close();
+      });
+      document.addEventListener('keydown', onKeydown);
     }
   </script>
   <!-- Pinned versions — avoids version-drift breakage from floating @4/@latest tags -->
