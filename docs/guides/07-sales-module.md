@@ -3,7 +3,7 @@
 > [docs](../README.md) → [Guides](README.md) → Sales module
 > Previous: [6. Workbenches](06-workbenches.md)
 
-**Sales AI** (`/sales`) is a separate workspace vertical from Support AI — a different purpose, different backend module (`backend/src/sales/`), kept isolated at the code level (see the isolation rule in the repo's [`CLAUDE.md`](../../CLAUDE.md)). It reuses the same CRM connector and AI-provider infrastructure from [4. Connecting data sources](04-connectors.md), but nothing else from Support/workbenches.
+**Sales AI** (`/sales`) is a separate workspace vertical from Support AI — a different purpose, different backend module (`backend/src/sales/`), kept isolated at the code level. It reuses the same CRM connector and AI-provider infrastructure from [4. Connecting data sources](04-connectors.md), but nothing else from Support/workbenches.
 
 ## What it does today: automated Weekly Sales Report
 

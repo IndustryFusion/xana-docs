@@ -87,8 +87,7 @@ External systems that plug into XANA over the OpenXANA manifest contract — eac
 ## What's still pending
 
 - **FusionPass / Process Twin integration via the Industry Fusion Data Space** — these pipelines aren't wired to a real backend yet (see "What's real vs. demo" in [Frontend architecture](docs/architecture/frontend.md)); connecting them through the Industry Fusion Data Space is planned, not done.
-- **Keycloak / IFRIC Registry authentication** — today's auth is XANA's own DB-backed users with a custom HMAC-signed session token, applied inconsistently across routes (see "Auth coverage" in [Backend architecture](docs/architecture/backend.md)). Extending or replacing it with Keycloak / IFRIC Registry — covering both individual user auth and company/tenant-level identity and setup — is planned, not done.
+- **Keycloak / IFRIC Registry authentication** — today's auth is XANA's own DB-backed users with a custom HMAC-signed session token (see [Backend architecture](docs/architecture/backend.md)). Extending or replacing it with Keycloak / IFRIC Registry — covering both individual user auth and company/tenant-level identity and setup — is planned, not done.
 
 ---
 
-For AI coding agents working in this repo, [`CLAUDE.md`](CLAUDE.md) is the maintained ground truth on module layout and cross-cutting rules.

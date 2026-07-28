@@ -33,7 +33,6 @@ Graphs are scoped per **skill**, not one monolithic pipeline: `src/graphs/regist
 | `GET /v1/knowledge/page-image` | Fetch a rendered manual page image, for the in-chat page viewer |
 | `GET` / `PUT /v1/config/llm` | Read/override the LLM config the agent is using — a runtime, non-per-request config path distinct from the per-request `AiProviderConfig` in [ARCHITECTURE.md §3](../ARCHITECTURE.md#3-configuring-the-llm) |
 | `POST /v1/media/process-image` / `process-url` / `process-video` | Run OCR (LightOnOCR, [§5](../ARCHITECTURE.md#5-ocr-and-document-parsing)) on a technician-uploaded photo, URL, or video — the trigger side of `read_attachment_details` ([§2](../ARCHITECTURE.md#2-connecting-to-data-sources-tool-calling-connectors-and-mcp)) |
-| `GET /v1/debug/rag-log` | Recent RAG search log entries — backs the hidden `backend`'s `/developer/rag-search-log` debug route ([Backend](backend.md)) |
 
 ## Observability
 

@@ -26,7 +26,7 @@ docker compose up --build
 | MongoDB | localhost:27017 |
 | Qdrant | http://localhost:6333 |
 
-Default login: `admin` / `admin123` (override via `APP_ADMIN_*` in `.env`).
+Default login: set via `APP_ADMIN_USERNAME`/`APP_ADMIN_PASSWORD` in `.env` before first startup (username defaults to `admin` if unset — always set a real password, don't rely on the code's zero-config fallback beyond local dev).
 
 ### Full stack with OpenXANA connectors
 

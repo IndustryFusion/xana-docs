@@ -187,7 +187,7 @@ A few implementation details that matter for anyone extending this:
 
 - The BM25 index is built once per retrieval call and cached in-process for the scope of an investigation (`sparse_index.get_or_build_bm25_index`), not rebuilt per query variant.
 - Candidate-pool and rerank-pool sizes scale with the scoped corpus size (`retriever.derive_candidate_pool`, config-bounded min/max) rather than being flat constants — a huge knowledge base gets more retrieval depth than a tiny one, at predictable cost either way.
-- Chunking is more than fixed-size splitting: paragraphs are grouped by embedding-similarity ("semantic chunking") before size-based packing, table content is extracted and chunked separately from prose, and chunks spanning a page break are stitched back together. Adjacent-chunk overlap and exact-duplicate dropping exist in config (`CHUNKING_OVERLAP_CHARS`, `CHUNKING_DEDUP_ENABLED`) but both default off — see the note in `CLAUDE.md` about why (they need a `CHUNKING_SCHEMA_VERSION` bump to actually take effect on cached content).
+- Chunking is more than fixed-size splitting: paragraphs are grouped by embedding-similarity ("semantic chunking") before size-based packing, table content is extracted and chunked separately from prose, and chunks spanning a page break are stitched back together. Adjacent-chunk overlap and exact-duplicate dropping exist in config (`CHUNKING_OVERLAP_CHARS`, `CHUNKING_DEDUP_ENABLED`) but both default off, since turning either on needs a `CHUNKING_SCHEMA_VERSION` bump to actually take effect on cached content.
 - Retrieval is never live-connector-backed at query time — see the note in [§2](#2-connecting-to-data-sources-tool-calling-connectors-and-mcp). Keeping Qdrant/BM25 current for a project's knowledge scope is a separate, explicit reindex action.
 
 ---
@@ -213,4 +213,3 @@ Full detail: [Backend architecture](architecture/backend.md).
 
 ---
 
-For AI coding agents working in this repo, [`CLAUDE.md`](../CLAUDE.md) is the maintained ground truth on module layout and cross-cutting rules.

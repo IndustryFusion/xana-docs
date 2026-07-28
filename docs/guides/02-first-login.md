@@ -7,8 +7,8 @@
 
 On first backend startup, if no users exist yet in MongoDB, XANA seeds exactly one admin account from your `.env`:
 
-- Username: `APP_ADMIN_USERNAME` (default `admin`)
-- Password: `APP_ADMIN_PASSWORD` (default `admin123`)
+- Username: `APP_ADMIN_USERNAME` (defaults to `admin`)
+- Password: `APP_ADMIN_PASSWORD` — set this in your `.env` before first startup; there's a fallback value in the code for zero-config local dev, but never rely on it past that
 
 This seeding only ever happens once — it's a one-time bootstrap, not an ongoing auth source. Once any user exists, changing `APP_ADMIN_*` in `.env` has no further effect. This account does **not** need a forced password change on first login (only users created later via the admin panel do — see [3. User management](03-user-management.md)); change the password yourself if you're not on a throwaway local instance.
 

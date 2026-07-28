@@ -31,4 +31,3 @@
   - [Web connector README](connectors/storages/web/README.md)
 
 - [Docs index](docs/README.md)
-- [CLAUDE.md (agent notes)](CLAUDE.md)

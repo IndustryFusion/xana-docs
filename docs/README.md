@@ -29,7 +29,3 @@ Each architecture page above links to its service's own README for operational d
 | Workflow agent ↔ backend wiring | [`workflow-agent/INTEGRATION.md`](../workflow-agent/INTEGRATION.md) |
 | Dynamics CRM connector | [`connectors/CRM/dynamics-ax/README.md`](../connectors/CRM/dynamics-ax/README.md) — OpenXANA manifest, endpoints, Kubernetes deploy |
 | Web/storage connector | [`connectors/storages/web/README.md`](../connectors/storages/web/README.md) — connector config format, security defaults |
-
-## Project instructions
-
-[`CLAUDE.md`](../CLAUDE.md) at the repo root is the actively-maintained ground truth for module layout and cross-cutting rules (including the sales/support code-isolation rule referenced in the [sales module guide](guides/07-sales-module.md)) — check it when this documentation and the code seem to disagree.

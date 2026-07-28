@@ -58,17 +58,9 @@ Deploy order doesn't matter for a bare install (`envFrom` only needs the ConfigM
 
 Concretely, for a target cluster:
 
-1. Create the Secret object by hand, with the exact keys the deployment expects — e.g. for backend (`helm/charts/backend/templates/secret.yaml`'s disabled block names them): `APP_ADMIN_USERNAME`, `APP_ADMIN_PASSWORD`, `APP_AUTH_SECRET`, `APP_ENCRYPTION_KEY`, `OPENAI_COMPATIBLE_API_KEY` — as `backend-secret`, since that's the name `templates/deployment.yaml`'s `secretRef` points at:
-   ```bash
-   kubectl create secret generic backend-secret -n xana \
-     --from-literal=APP_ADMIN_USERNAME=admin \
-     --from-literal=APP_ADMIN_PASSWORD='...' \
-     --from-literal=APP_AUTH_SECRET='...' \
-     --from-literal=APP_ENCRYPTION_KEY="$(openssl rand -hex 32)" \
-     --from-literal=OPENAI_COMPATIBLE_API_KEY='...'
-   ```
-2. **Protect it from Fleet before the next sync**, or Fleet will delete it as an object no longer part of the rendered chart: `kubectl annotate secret backend-secret helm.sh/resource-policy=keep -n xana --overwrite`. Already-running pods keep their env vars regardless; only a future rollout/restart would fail to start if the Secret got deleted out from under it.
-3. Repeat the same pattern (own Secret name, own key set, same `resource-policy=keep` annotation) for `workflow-agent`, `dynamics-connector`, and `qdrant` if those charts are in use.
+1. Create each service's Secret object by hand — the exact keys and Secret name a given deployment expects are documented in that chart's own (disabled) `templates/secret.yaml`, and the deployment's `secretRef` names the Secret it looks for. Use `kubectl create secret generic <name> -n xana --from-literal=KEY=value ...` with those.
+2. **Protect it from Fleet before the next sync**, or Fleet will delete it as an object no longer part of the rendered chart: `kubectl annotate secret <name> helm.sh/resource-policy=keep -n xana --overwrite`. Already-running pods keep their env vars regardless; only a future rollout/restart would fail to start if the Secret got deleted out from under it.
+3. Repeat for `backend`, `workflow-agent`, `dynamics-connector`, and `qdrant` — the four charts with a (disabled) `secret.yaml` — for whichever are in use.
 
 `web-connector` is different again — it has no `secret.yaml`/Secret at all. Its wiki credentials are baked into the Docker image at **build time** via `docker build --build-arg WIKI_USERNAME=... --build-arg WIKI_PASSWORD=...` (see `connectors/storages/web/Dockerfile`), not supplied at deploy time through Kubernetes/Helm in any form.
 
